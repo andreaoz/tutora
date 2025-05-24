@@ -24,7 +24,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home,name="home"),
     path('login/', views.teacher_login, name='login'),
+    path('logout/', views.teacher_logout, name='logout'),
     path('tutoringsteacher/', views.tutoring_list_teacher, name='tutoringsteacher'),
+    path('tutoringsstudent/', views.tutoring_list_student, name='tutoringsstudent'),
     path('newtutoring/', views.new_tutoring, name='newtutoring'),
+    path('tutoringreservation/<int:tutoring_id>/', views.tutoring_reservation, name='tutoringreservation'),
 
 ]

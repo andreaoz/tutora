@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Reservation</title>
+</head>
+<body>
+    <h2>Reservar asesoría de {{ tutoring.course }}</h2>
+    <p><strong>Fecha:</strong> {{ tutoring.tutoring_date }}</p>
+    <p><strong>Aula:</strong> {{ tutoring.classroom }}</p>
+    
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="POST">
+        {% csrf_token %}
+
+        <p>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+        </p>
+
+        <p>
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" required>
+        </p>
+
+        <p>
+            <label for="semester">Semester</label>
+            <input type="text" id="semester" name="semester" required>
+        </p>
+
+        <p>
+            <label for="group">Group</label>
+            <input type="text" id="group" name="group" required>
+        </p>
+
+        <p>
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" required>
+        </p>
+
+        <button type="submit">Register Reservation</button>
+    </form>
+
+    <p><a href="{% url 'tutoringsstudent' %}">Go back to the tutoring schedule</a></p>
+</body>
+</html>

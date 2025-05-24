@@ -1,12 +1,12 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from datetime import date, timedelta
 from django.db.models import Count
 from .models import *
 from django.contrib import messages
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+
 
 
 def home(request):
@@ -21,7 +21,7 @@ def teacher_login(request):
             teacher = Teacher.objects.get(email=email)
             user = teacher.user  # accedemos al User vinculado
 
-            # Autenticar con username (que en tu caso parece ser el correo)
+            # Autenticar con username (email)
             user = authenticate(request, username=user.username, password=password)
 
             if user is not None:
@@ -34,6 +34,11 @@ def teacher_login(request):
             messages.error(request, 'Correo no registrado')
 
     return render(request, 'teacher_login.html')
+
+@login_required
+def teacher_logout(request):
+    request.session.flush()
+    return redirect('login')
 
 @login_required
 def tutoring_list_teacher(request):
@@ -55,16 +60,14 @@ def new_tutoring(request):
         semester = request.POST.get('semester')
         teacher = None
 
-        # Obtenemos el maestro desde el usuario loggeado
         try:
-            #teacher = request.user.teacher_profile  # Asume que User tiene OneToOne con Teacher
             teacher = Teacher.objects.get(user=request.user)
             print("¡Maestro encontrado manualmente!", teacher)
+
         except AttributeError:
             print("Error: El usuario loggeado no tiene un objeto Teacher asociado.")
             messages.error(request, "Tu cuenta no está asociada a un perfil de profesor.")
-            # Solución: Redirigir a una URL, por ejemplo, 'some_error_page' o a la misma página
-            return render(request, 'new_tutoring.html') # Reemplaza 'some_error_page' con la URL adecuada
+            return render(request, 'new_tutoring.html') 
 
         if all([course, tutoring_date, classroom, semester]) and teacher:
             Tutoring.objects.create(
@@ -84,3 +87,41 @@ def new_tutoring(request):
 
 
     return render(request, 'new_tutoring.html')
+
+def tutoring_list_student(request):
+    print("Usuario loggeado:", request.user)
+    tutorings = Tutoring.objects.all()
+    return render(request, 'tutoring_list_student.html', {'tutorings': tutorings})
+
+def tutoring_reservation(request, tutoring_id):
+    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        last_name = request.POST.get('last_name')
+        semester = request.POST.get('semester')
+        group = request.POST.get('group')
+        email = request.POST.get('email')
+
+        # Puedes evitar duplicados buscando por email (o nombre+grupo si lo prefieres)
+        student, created = Student.objects.get_or_create(
+            email=email,
+            defaults={
+                'name': name,
+                'last_name': last_name,
+                'semester': semester,
+                'group': group
+            }
+        )
+
+        # Crear la reserva
+        Reservation.objects.create(
+            student=student,
+            teacher=tutoring.teacher,
+            tutoring=tutoring
+        )
+
+        messages.success(request, '¡Reserva realizada con éxito!')
+        return redirect('tutoringsstudent')  # o donde quieras llevar al alumno
+
+    return render(request, 'student_registration.html', {'tutoring': tutoring})
