@@ -8,7 +8,7 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=128)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='teacher_profile')
 
     def save(self, *args, **kwargs):
     # Solo encripta si la contraseña no está ya encriptada

@@ -11,7 +11,6 @@ class TutoringAdmin(admin.ModelAdmin):
         return f"{obj.teacher.name} {obj.teacher.last_name}"
     teacher_name.short_description = 'Teacher'
 
-
 admin.site.register(Teacher,TeacherAdmin)
 admin.site.register(Student)
 admin.site.register(Tutoring, TutoringAdmin)

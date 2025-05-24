@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 
 def home(request):
@@ -18,27 +19,35 @@ def teacher_login(request):
 
         try:
             teacher = Teacher.objects.get(email=email)
-            if check_password(password, teacher.password):
-                # Guardar sesión (opcional)
-                request.session['teacher_id'] = teacher.id
-                return redirect('tutoringsteacher')  # Cambia esto a donde quieras redirigir
+            user = teacher.user  # accedemos al User vinculado
+
+            # Autenticar con username (que en tu caso parece ser el correo)
+            user = authenticate(request, username=user.username, password=password)
+
+            if user is not None:
+                login(request, user)  # ahora sí: Django maneja la sesión
+                return redirect('tutoringsteacher')
             else:
-                messages.error(request, 'Wrong password')
+                messages.error(request, 'Email o contraseña incorrectos')
+
         except Teacher.DoesNotExist:
-            messages.error(request, 'Wrong email')
+            messages.error(request, 'Correo no registrado')
 
     return render(request, 'teacher_login.html')
 
 @login_required
 def tutoring_list_teacher(request):
+    print("Usuario loggeado:", request.user)
+    print("ID del usuario:", request.user.id)
     tutorings = Tutoring.objects.all()
     return render(request, 'tutoring_list_teacher.html', {'tutorings': tutorings})
 
-from django.shortcuts import render, redirect
-from django.contrib import messages # Asegúrate de importar messages
-
 @login_required
 def new_tutoring(request):
+    print("Usuario loggeado:", request.user)
+    print("ID del usuario:", request.user.id)
+    print("¿Está autenticado?", request.user.is_authenticated)
+
     if request.method == 'POST':
         course = request.POST.get('course')
         tutoring_date = request.POST.get('tutoring_date')
@@ -48,12 +57,14 @@ def new_tutoring(request):
 
         # Obtenemos el maestro desde el usuario loggeado
         try:
-            teacher = request.user.teacher  # Asume que User tiene OneToOne con Teacher
-        except Teacher.DoesNotExist:
+            #teacher = request.user.teacher_profile  # Asume que User tiene OneToOne con Teacher
+            teacher = Teacher.objects.get(user=request.user)
+            print("¡Maestro encontrado manualmente!", teacher)
+        except AttributeError:
             print("Error: El usuario loggeado no tiene un objeto Teacher asociado.")
             messages.error(request, "Tu cuenta no está asociada a un perfil de profesor.")
             # Solución: Redirigir a una URL, por ejemplo, 'some_error_page' o a la misma página
-            return redirect(request, 'new_tutoring.html') # Reemplaza 'some_error_page' con la URL adecuada
+            return render(request, 'new_tutoring.html') # Reemplaza 'some_error_page' con la URL adecuada
 
         if all([course, tutoring_date, classroom, semester]) and teacher:
             Tutoring.objects.create(
