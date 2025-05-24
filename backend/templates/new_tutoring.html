@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Tutoring</title>
+</head>
+<body>
+    <h1>Register new tutoring schedule</h1>
+    
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="POST">
+        {% csrf_token %}
+
+        <p>
+            <label for="course">Class</label>
+            <input type="text" id="course" name="course" required>
+        </p>
+
+        <p>
+            <label for="tutoring_date">Date</label>
+            <input type="date" id="tutoring_date" name="tutoring_date" required>
+        </p>
+
+        <p>
+            <label for="classroom">Classroom</label>
+            <input type="text" id="classroom" name="classroom" required>
+        </p>
+
+        <p>
+            <label for="semester">Semester</label>
+            <input type="text" id="semester" name="semester" required>
+        </p>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <p><a href="{% url 'tutoringsteacher' %}">Go back to the tutoring schedule</a></p>
+</body>
+</html>

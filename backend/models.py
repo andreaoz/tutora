@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 
 class Teacher(models.Model):
     id = models.AutoField(primary_key=True)
@@ -7,6 +8,7 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=128)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def save(self, *args, **kwargs):
     # Solo encripta si la contraseña no está ya encriptada
@@ -15,7 +17,7 @@ class Teacher(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.id)
+        return f"{self.name} {self.last_name}"
 
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
