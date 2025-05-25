@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reservation Confirmation</title>
+</head>
+<body>
+    <h1>Your reservation is ready!</h1>
+    <h2>Reservation id : {{ reservation.id }}</h2>
+    <h3>Tutoring information: </h3>
+    <p></strong>Class:</strong> {{ tutoring.course }}</h2>
+    <p></strong>Teacher:</strong> {{ teacher.name }} {{ teacher.last_name }}</h2>
+    <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
+    <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
+    <p></strong>Student:</strong> {{ student.name }} {{ student.last_name }}</h2>
+    <br>
+    <p><a href="{% url 'tutoringsstudent' %}">Book another tutoring</a></p>
+</body>
+</html>

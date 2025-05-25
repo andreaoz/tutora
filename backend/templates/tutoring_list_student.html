@@ -10,6 +10,10 @@
     </head>
     <body>
         <h1>Welcome to Tutora </h1>
+            <!-- Botón Atrás -->
+            <div class="d-flex justify-content-start mb-3">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">← Go home</a>
+            </div>
         {% if tutorings %}
         <table class="table">
             <thead>

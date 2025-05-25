@@ -46,7 +46,13 @@
 
         <button type="submit">Register Reservation</button>
     </form>
-
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <p><a href="{% url 'tutoringsstudent' %}">Go back to the tutoring schedule</a></p>
 </body>
 </html>

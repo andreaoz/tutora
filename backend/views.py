@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-
-
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
 
 def home(request):
     return render(request,"home.html")
@@ -44,7 +44,9 @@ def teacher_logout(request):
 def tutoring_list_teacher(request):
     print("Usuario loggeado:", request.user)
     print("ID del usuario:", request.user.id)
-    tutorings = Tutoring.objects.all()
+    teacher = Teacher.objects.get(user=request.user)
+    tutorings = Tutoring.objects.filter(teacher=teacher)
+
     return render(request, 'tutoring_list_teacher.html', {'tutorings': tutorings})
 
 @login_required
@@ -78,7 +80,7 @@ def new_tutoring(request):
                 teacher=teacher
             )
             print("¡Tutoring guardado exitosamente!")
-            messages.success(request, "Asesoría guardada exitosamente.") # Mensaje de éxito
+            #messages.success(request, "Asesoría guardada exitosamente.") # Mensaje de éxito
             return redirect('tutoringsteacher')
         else:
             print("Error: Faltan datos o el profesor no está asociado.") # Para depuración
@@ -115,13 +117,63 @@ def tutoring_reservation(request, tutoring_id):
         )
 
         # Crear la reserva
-        Reservation.objects.create(
+        reservation = Reservation.objects.create(
             student=student,
             teacher=tutoring.teacher,
             tutoring=tutoring
         )
 
-        messages.success(request, '¡Reserva realizada con éxito!')
-        return redirect('tutoringsstudent')  # o donde quieras llevar al alumno
+
+        #messages.success(request, '¡Reserva realizada con éxito!')
+        return redirect('reservationconfirmation',reservation_id=reservation.id)  # o donde quieras llevar al alumno
 
     return render(request, 'student_registration.html', {'tutoring': tutoring})
+
+def reservation_confirmation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    tutoring = reservation.tutoring
+    student = reservation.student
+    teacher = reservation.teacher
+
+    return render(request, 'reservation_confirmation.html', {
+        'reservation': reservation,
+        'tutoring': tutoring,
+        'student': student,
+        'teacher': teacher,
+    })
+
+def teacher_signup(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        school_password = request.POST.get('school_password')  # contraseña secreta
+
+        if school_password != settings.SCHOOL_PASSWORD:
+            messages.error(request, 'Invalid school password.')
+            return render(request, 'teacher_signup.html')
+
+        # Verifica que el correo no esté ya registrado
+        if User.objects.filter(username=email).exists():
+            messages.error(request, 'Email already registered.')
+            return render(request, 'teacher_signup.html')
+        
+        # Crear el usuario Django
+        user = User.objects.create_user(
+            username=email,
+            password=password,
+        )
+
+        # Guarda el nuevo maestro
+        Teacher.objects.create(
+            user=user,
+            name=name,
+            last_name=last_name,
+            email=email,
+            password=make_password(password)
+        )
+        messages.success(request, 'Account created successfully. Please log in.')
+        return redirect('login')
+
+    return render(request, 'teacher_signup.html')

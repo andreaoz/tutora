@@ -17,29 +17,23 @@
 <form method="POST">
         {% csrf_token %}
 
-        <p>
-            <label for="course">Class</label>
-            <input type="text" id="course" name="course" required>
-        </p>
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
 
-        <p>
-            <label for="tutoring_date">Date</label>
-            <input type="date" id="tutoring_date" name="tutoring_date" required>
-        </p>
+    <label>Last name:</label>
+    <input type="text" name="last_name" required><br>
 
-        <p>
-            <label for="classroom">Classroom</label>
-            <input type="text" id="classroom" name="classroom" required>
-        </p>
+    <label>Email:</label>
+    <input type="email" name="email" required><br>
 
-        <p>
-            <label for="semester">Semester</label>
-            <input type="text" id="semester" name="semester" required>
-        </p>
+    <label>Password:</label>
+    <input type="password" name="password" required><br>
 
-        <button type="submit">Save</button>
+    <label>School Password:</label>
+    <input type="password" name="school_password" required><br>
+
+    <button type="submit">Register</button>
     </form>
 
-    <p><a href="{% url 'tutoringsteacher' %}">Go back to the tutoring schedule</a></p>
 </body>
 </html>
