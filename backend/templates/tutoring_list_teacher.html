@@ -9,38 +9,91 @@
         <title>Teacher Tutoring List</title>
     </head>
     <body>
-        <h1>Welcome to Tutora </h1>
-        <a class="btn btn-primary" style="font-weight:bold; display:inline" href="{% url 'newtutoring' %}"">Add turoring schedule</a>
-        <a class="btn btn-primary" style="font-weight:bold; display:inline" href="{% url 'logout' %}"">Log out</a>
-        {% if tutorings %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Class</th>
-                    <th>Date</th>
-                    <th>Classroom</th>
-                    <th>Semester</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tutoring in tutorings %}
-                    <tr>
-                        <td>{{tutoring.id }}</td>
-                        <td>{{tutoring.course }}</td>
-                        <td>{{tutoring.tutoring_date }}</td>
-                        <td>{{tutoring.classroom }}</td>
-                        <td>{{tutoring.semester }}</td>
-                        <!--td>
-                            <input type="radio" name="selected_tutorings" value="{{ tutoring.id }}">
-                        </td-->
-                    </tr>
+        <!-- Barra de navegación -->
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
+            <!-- Botón para abrir el menú lateral -->
+            <button class="btn btn-outline-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                ☰
+            </button>
+
+            <!-- Nombre del maestro alineado a la derecha -->
+            <span class="navbar-brand mb-0 h1 ms-auto">
+                {{ teacher.name }} {{ teacher.last_name }}
+            </span>
+            </div>
+        </nav>
+
+        <!-- Menú lateral (offcanvas) -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+            <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Tutora</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a class="btn btn-primary" style="font-weight:bold; display:inline" href="{% url 'newtutoring' %}"">Add turoring schedule</a></li>
+                <br>
+                <li><a class="btn btn-primary" style="font-weight:bold; display:inline" href="{% url 'tutoring_past_teacher' %}"">Past tutorings</a></li>
+                <br>
+                <li><a class="btn btn-primary" style="font-weight:bold; display:inline" href="{% url 'logout' %}"">Log out</a></li>
+            </ul>
+            </div>
+        </div>
+        
+        {% if tutorings_today %}
+        <div class="container mt-4">
+            <h3 class="text-success">🟢 Today's Tutorings</h3>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for tutoring in tutorings_today %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tutoring.course }}</h5>
+                            <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
+                            <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
+                            <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <a class="btn btn-sm btn-primary">Editar</a>
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No turoring scheduled.</p>
+            </div>
+        </div>
         {% endif %}
+
+        {% if tutorings_future %}
+        <div class="container mt-5">
+            <h3 class="text-primary">🔵 Upcoming Tutorings</h3>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for tutoring in tutorings_future %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tutoring.course }}</h5>
+                            <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
+                            <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
+                            <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <a class="btn btn-sm btn-primary">Editar</a>
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="container mt-4 text-end">
+            <a href="{% url 'tutoring_past_teacher' %}" class="btn btn-outline-secondary">📄 View Past Tutorings</a>
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
 {% endblock content %}

@@ -9,41 +9,76 @@
         <title>Teacher Tutoring List</title>
     </head>
     <body>
-        <h1>Welcome to Tutora </h1>
+        <!-- Barra de navegación -->
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
             <!-- Botón Atrás -->
             <div class="d-flex justify-content-start mb-3">
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">← Go home</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">← Go home</a>
             </div>
-        {% if tutorings %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Class</th>
-                    <th>Date</th>
-                    <th>Classroom</th>
-                    <th>Semester</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tutoring in tutorings %}
-                    <tr>
-                        <td>{{tutoring.id }}</td>
-                        <td>{{tutoring.course }}</td>
-                        <td>{{tutoring.tutoring_date }}</td>
-                        <td>{{tutoring.classroom }}</td>
-                        <td>{{tutoring.semester }}</td>
-                        <td>
-                            <a href="{% url 'tutoringreservation' tutoring.id %}" class="btn btn-primary">Book</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No turoring scheduled.</p>
-        {% endif %}
+
+            <span class="navbar-brand mb-0 h1 mx-auto">
+                Available Tutoring Schedules
+            </span>
+            </div>
+        </nav>
+
+        <div class="text-success">
+            <hr class="border border-primary border-3 opacity-75">
+        </div>
+
+            {% if tutorings_today %}
+            <div class="container mt-4">
+                <h4 class="text-success">🟢 Today's Tutorings</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for tutoring in tutorings_today %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-success">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ tutoring.course }}</h5>
+                                <p><strong>Teacher:</strong> {{ tutoring.teacher.name }} {{ tutoring.teacher.last_name }}</p>
+                                <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
+                                <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
+                                <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                    <a href="{% url 'tutoringreservation' tutoring.id %}" class="btn btn-primary">Book</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if tutorings_future %}
+            <div class="container mt-5">
+                <h4 class="text-primary">🔵 Tutorings in the Next 7 Days</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for tutoring in tutorings_future %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ tutoring.course }}</h5>
+                                <p><strong>Teacher:</strong> {{ tutoring.teacher.name }} {{ tutoring.teacher.last_name }}</p>
+                                <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
+                                <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
+                                <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                    <a href="{% url 'tutoringreservation' tutoring.id %}" class="btn btn-primary">Book</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not tutorings_today and not tutorings_future %}
+            <p class="text-center text-muted mt-5">No tutorings available today or in the next 7 days.</p>
+            {% endif %}
+
     </body>
 </html>
 {% endblock content %}

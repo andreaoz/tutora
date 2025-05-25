@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from datetime import date, timedelta
+from django.utils.timezone import now
 from django.db.models import Count
 from .models import *
 from django.contrib import messages
@@ -44,10 +45,28 @@ def teacher_logout(request):
 def tutoring_list_teacher(request):
     print("Usuario loggeado:", request.user)
     print("ID del usuario:", request.user.id)
+    today = date.today()
     teacher = Teacher.objects.get(user=request.user)
-    tutorings = Tutoring.objects.filter(teacher=teacher)
 
-    return render(request, 'tutoring_list_teacher.html', {'tutorings': tutorings})
+    tutorings_today = Tutoring.objects.filter(tutoring_date=today,teacher=teacher)
+    tutorings_future = Tutoring.objects.filter(tutoring_date__gt=today,teacher=teacher)
+
+    return render(request, 'tutoring_list_teacher.html', {
+        'teacher': teacher,
+        'tutorings_today': tutorings_today,
+        'tutorings_future': tutorings_future,
+        })
+
+@login_required
+def tutoring_past_teacher(request):
+    today = date.today()
+    teacher = Teacher.objects.get(user=request.user)
+    tutorings_past = Tutoring.objects.filter(teacher=teacher, tutoring_date__lt=today).order_by('-tutoring_date')
+
+    return render(request, 'tutoring_past_teacher.html', {
+        'tutorings_past': tutorings_past,
+        'teacher': teacher,
+    })
 
 @login_required
 def new_tutoring(request):
@@ -55,21 +74,21 @@ def new_tutoring(request):
     print("ID del usuario:", request.user.id)
     print("¿Está autenticado?", request.user.is_authenticated)
 
+    # Obtener el maestro al inicio
+    try:
+        teacher = Teacher.objects.get(user=request.user)
+        print("¡Maestro encontrado manualmente!", teacher)
+    except Teacher.DoesNotExist:
+        teacher = None
+        print("Error: El usuario loggeado no tiene un objeto Teacher asociado.")
+        messages.error(request, "Tu cuenta no está asociada a un perfil de profesor.")
+        return render(request, 'new_tutoring.html')
+
     if request.method == 'POST':
         course = request.POST.get('course')
         tutoring_date = request.POST.get('tutoring_date')
         classroom = request.POST.get('classroom')
         semester = request.POST.get('semester')
-        teacher = None
-
-        try:
-            teacher = Teacher.objects.get(user=request.user)
-            print("¡Maestro encontrado manualmente!", teacher)
-
-        except AttributeError:
-            print("Error: El usuario loggeado no tiene un objeto Teacher asociado.")
-            messages.error(request, "Tu cuenta no está asociada a un perfil de profesor.")
-            return render(request, 'new_tutoring.html') 
 
         if all([course, tutoring_date, classroom, semester]) and teacher:
             Tutoring.objects.create(
@@ -80,20 +99,30 @@ def new_tutoring(request):
                 teacher=teacher
             )
             print("¡Tutoring guardado exitosamente!")
-            #messages.success(request, "Asesoría guardada exitosamente.") # Mensaje de éxito
             return redirect('tutoringsteacher')
         else:
-            print("Error: Faltan datos o el profesor no está asociado.") # Para depuración
-            messages.error(request, "Por favor, completa todos los campos para crear la asesoría.") # Mensaje de error para el usuario
-            return render(request, 'new_tutoring.html') # Renderiza la misma página con el formulario
+            print("Error: Faltan datos o el profesor no está asociado.")
+            messages.error(request, "Por favor, completa todos los campos para crear la asesoría.")
 
+    # Aquí teacher siempre está definido (o se ha hecho un return antes)
+    return render(request, 'new_tutoring.html', {'teacher': teacher})
 
-    return render(request, 'new_tutoring.html')
+def student_options(request):
+    return render(request,"student_options.html")
 
 def tutoring_list_student(request):
     print("Usuario loggeado:", request.user)
-    tutorings = Tutoring.objects.all()
-    return render(request, 'tutoring_list_student.html', {'tutorings': tutorings})
+    today = date.today()
+    next_week = today + timedelta(days=7)
+
+    tutorings_today = Tutoring.objects.filter(tutoring_date=today)
+    tutorings_future = Tutoring.objects.filter(tutoring_date__gt=today, tutoring_date__lte=next_week)
+    
+    #teacher = Teacher.objects.all()
+    return render(request, 'tutoring_list_student.html', {
+        'tutorings_today': tutorings_today,
+        'tutorings_future': tutorings_future,
+        })
 
 def tutoring_reservation(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)
