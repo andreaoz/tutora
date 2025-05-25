@@ -83,6 +83,11 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label for="max_students" class="form-label">Slots available:</label>
+                    <input type="number" class="form-control" id="max_students" name="max_students" required min="1">
+                </div>
+
                 <button type="submit" class="btn btn-success">Save</button>
                 <a href="{% url 'tutoringsteacher' %}" class="btn btn-secondary ms-2">Cancel</a>
             </form>

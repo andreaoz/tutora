@@ -89,16 +89,20 @@ def new_tutoring(request):
         tutoring_date = request.POST.get('tutoring_date')
         classroom = request.POST.get('classroom')
         semester = request.POST.get('semester')
+        max_students = int(request.POST['max_students'])
 
-        if all([course, tutoring_date, classroom, semester]) and teacher:
+
+        if all([course, tutoring_date, classroom, semester, max_students]) and teacher:
             Tutoring.objects.create(
                 course=course,
                 tutoring_date=tutoring_date,
                 classroom=classroom,
                 semester=semester,
+                max_students=max_students,
                 teacher=teacher
             )
             print("¡Tutoring guardado exitosamente!")
+            #messages.success(request, "Tutoring created successfully.")
             return redirect('tutoringsteacher')
         else:
             print("Error: Faltan datos o el profesor no está asociado.")
@@ -126,6 +130,10 @@ def tutoring_list_student(request):
 
 def tutoring_reservation(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+
+    if tutoring.spots_left <= 0:
+        messages.error(request, "Sorry, no spots left in this tutoring.")
+        return redirect('tutoringsstudent')
 
     if request.method == 'POST':
         name = request.POST.get('name')

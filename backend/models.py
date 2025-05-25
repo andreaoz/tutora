@@ -37,9 +37,18 @@ class Tutoring(models.Model):
     classroom = models.CharField(max_length=20)
     semester = models.CharField(max_length=2)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,related_name='tutorings')
+    max_students = models.PositiveIntegerField(default=10)
 
     def __str__(self):
         return str(self.id)
+    
+    @property
+    def current_students_count(self):
+        return self.reservations.count()
+
+    @property
+    def spots_left(self):
+        return self.max_students - self.current_students_count
     
 class Reservation(models.Model):
     id = models.AutoField(primary_key=True)

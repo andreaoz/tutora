@@ -40,9 +40,12 @@
                                 <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
                                 <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
                                 <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
-                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                <p><strong>Spots left:</strong> {{ tutoring.spots_left }}</p>
+                                {% if tutoring.spots_left > 0 %}
                                     <a href="{% url 'tutoringreservation' tutoring.id %}" class="btn btn-primary">Book</a>
-                                </div>
+                                {% else %}
+                                    <button class="btn btn-secondary" disabled>Full</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -64,9 +67,12 @@
                                 <p><strong>Date:</strong> {{ tutoring.tutoring_date }}</p>
                                 <p><strong>Classroom:</strong> {{ tutoring.classroom }}</p>
                                 <p><strong>Semester:</strong> {{ tutoring.semester }}</p>
-                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                <p><strong>Spots left:</strong> {{ tutoring.spots_left }}</p>
+                                {% if tutoring.spots_left > 0 %}
                                     <a href="{% url 'tutoringreservation' tutoring.id %}" class="btn btn-primary">Book</a>
-                                </div>
+                                {% else %}
+                                    <button class="btn btn-secondary" disabled>Full</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
