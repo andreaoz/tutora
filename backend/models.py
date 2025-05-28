@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from datetime import time
 
 class Teacher(models.Model):
     id = models.AutoField(primary_key=True)
@@ -34,6 +35,7 @@ class Tutoring(models.Model):
     id = models.AutoField(primary_key=True)
     course = models.CharField(max_length=100)
     tutoring_date = models.DateField()
+    tutoring_time = models.TimeField(default=time(14,0))
     classroom = models.CharField(max_length=20)
     semester = models.CharField(max_length=2)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,related_name='tutorings')

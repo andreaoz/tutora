@@ -33,6 +33,6 @@ urlpatterns = [
     path('newtutoring/', views.new_tutoring, name='newtutoring'),
     path('tutoringreservation/<int:tutoring_id>/', views.tutoring_reservation, name='tutoringreservation'),
     path('reservationconfirmation/<int:reservation_id>/', views.reservation_confirmation, name='reservationconfirmation'),
-
+    path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
 
 ]

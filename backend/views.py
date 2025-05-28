@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from datetime import date, timedelta
+import datetime
 from django.utils.timezone import now
+from django.utils import timezone
 from django.db.models import Count
 from .models import *
 from django.contrib import messages
@@ -9,6 +10,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
+
+current_tz = timezone.get_current_timezone()
+print(current_tz)
 
 def home(request):
     return render(request,"home.html")
@@ -45,7 +49,7 @@ def teacher_logout(request):
 def tutoring_list_teacher(request):
     print("Usuario loggeado:", request.user)
     print("ID del usuario:", request.user.id)
-    today = date.today()
+    today = datetime.date.today()
     teacher = Teacher.objects.get(user=request.user)
 
     tutorings_today = Tutoring.objects.filter(tutoring_date=today,teacher=teacher)
@@ -59,7 +63,7 @@ def tutoring_list_teacher(request):
 
 @login_required
 def tutoring_past_teacher(request):
-    today = date.today()
+    today = datetime.date.today()
     teacher = Teacher.objects.get(user=request.user)
     tutorings_past = Tutoring.objects.filter(teacher=teacher, tutoring_date__lt=today).order_by('-tutoring_date')
 
@@ -87,15 +91,17 @@ def new_tutoring(request):
     if request.method == 'POST':
         course = request.POST.get('course')
         tutoring_date = request.POST.get('tutoring_date')
+        tutoring_time = request.POST.get('tutoring_time')
         classroom = request.POST.get('classroom')
         semester = request.POST.get('semester')
         max_students = int(request.POST['max_students'])
 
 
-        if all([course, tutoring_date, classroom, semester, max_students]) and teacher:
+        if all([course, tutoring_date, tutoring_time, classroom, semester, max_students]) and teacher:
             Tutoring.objects.create(
                 course=course,
                 tutoring_date=tutoring_date,
+                tutoring_time=tutoring_time,
                 classroom=classroom,
                 semester=semester,
                 max_students=max_students,
@@ -116,8 +122,8 @@ def student_options(request):
 
 def tutoring_list_student(request):
     print("Usuario loggeado:", request.user)
-    today = date.today()
-    next_week = today + timedelta(days=7)
+    today = datetime.date.today()
+    next_week = today + datetime.timedelta(days=7)
 
     tutorings_today = Tutoring.objects.filter(tutoring_date=today)
     tutorings_future = Tutoring.objects.filter(tutoring_date__gt=today, tutoring_date__lte=next_week)
@@ -214,3 +220,53 @@ def teacher_signup(request):
         return redirect('login')
 
     return render(request, 'teacher_signup.html')
+
+def cancel_reservation(request):
+    context = {}
+
+    if request.method == 'POST':
+        if 'reservation_id' in request.POST:
+            reservation_id = request.POST.get('reservation_id')
+            try:
+                reservation = Reservation.objects.get(id=reservation_id)
+                context['reservation'] = reservation
+            except Reservation.DoesNotExist:
+                context['error'] = "Reservación no encontrada."
+
+        elif 'confirm_cancel' in request.POST:
+            reservation_id = request.POST.get('confirm_cancel')
+            try:
+                reservation = Reservation.objects.get(id=reservation_id)
+                now = timezone.now() #con timezone
+
+                # Combina fecha y hora de la tutoría
+                tutoring_datetime = datetime.datetime.combine(
+                    reservation.tutoring.tutoring_date,
+                    reservation.tutoring.tutoring_time
+                )
+
+                # Asegura que esté en el mismo timezone
+                tutoring_datetime = timezone.make_aware(tutoring_datetime, timezone.get_current_timezone())
+                
+                # convertir a aware usando la zona horaria local configurada en Django
+                aware_now = timezone.make_aware(datetime.datetime.now(), timezone.get_current_timezone())
+
+                print("Hora actual (timezone.now()):", now)
+                print("Hora de la tutoría (tutoring_datetime):", tutoring_datetime)
+                print("Diferencia:", tutoring_datetime - now)
+                print("Hora local (sin timezone):", aware_now)
+
+                # Verifica si faltan más de 2 horas
+                if aware_now > tutoring_datetime:
+                    context['error'] = f"No puedes cancelar la reservación #{reservation_id} porque la tutoría ya pasó."
+                    context['reservation'] = reservation
+                elif tutoring_datetime - aware_now < datetime.timedelta(hours=2):
+                    context['error'] = f"No puedes cancelar la reservación #{reservation_id} porque faltan menos de 2 horas para la tutoría."
+                    context['reservation'] = reservation
+                else:
+                    reservation.delete()
+                    context['success'] = f"La reservación #{reservation_id} ha sido cancelada exitosamente."
+            except Reservation.DoesNotExist:
+                context['error'] = "La reservación ya no existe o ya fue cancelada."
+
+    return render(request, 'cancel_form.html', context)
