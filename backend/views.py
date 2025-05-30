@@ -270,3 +270,15 @@ def cancel_reservation(request):
                 context['error'] = "La reservación ya no existe o ya fue cancelada."
 
     return render(request, 'cancel_form.html', context)
+
+@login_required
+def attendance_list(request, tutoring_id):
+    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
+    teacher = Teacher.objects.get(user=request.user)
+
+    return render(request, 'attendance_list.html', {
+        'tutoring': tutoring,
+        'reservations': reservations,
+        'teacher': teacher,
+    })
