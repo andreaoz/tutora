@@ -1,20 +1,14 @@
-{% load static %}
-{% block content %}
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Bootstrap 5 CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Teacher Login</title>
-</head>
-<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+{% extends 'base.html' %}
 
-  <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+
+  <div class="chalkboard-white">
     
     <!-- Botón Atrás -->
     <div class="d-flex justify-content-start mb-3">
-      <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">← Go home</a>
+      <a href="{% url 'home' %}" class="btn btn-back">Go back</a>
     </div>
 
     <h3 class="text-center mb-3">Log in</h3>
@@ -28,31 +22,25 @@
     <form method="POST">
       {% csrf_token %}
       
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+      <div class="mb-3 row text-center text-sm-start">
+        <label for="email" class="col-12 col-sm-3 col-form-label">Email</label>
+        <div class="col-12 col-sm-9">
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+      <div class="mb-3 row text-center text-sm-start">
+        <label for="password" class="col-12 col-sm-3 col-form-label">Password</label>
+        <div class="col-12 col-sm-9">
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
       </div>
-
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Login</button>
+      <br>
+      <div class="d-grid gap-3 mx-auto" style="max-width: 250px;" >
+        <button type="submit" class="btn btn-login">Login</button>
+        <a href="{% url 'signup' %}" class="btn btn-signup">Sign Up</a>
       </div>
     </form>
-    <div class="d-flex justify-content-center mb-3">
-      <a href="{% url 'signup' %}" class="btn btn-outline-secondary btn-sm">Sign Up</a>
-    </div>
-
   </div>
 
-
-    
-    <!-- Bootstrap JS (opcional, solo si necesitas interactividad) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
-{% endblock content %}
+{% endblock %}
