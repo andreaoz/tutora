@@ -97,3 +97,10 @@ main {
   color: #e0e7d4; /* color claro */
   text-decoration: none;
 }
+
+.profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}

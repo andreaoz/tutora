@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -32,7 +33,10 @@ urlpatterns = [
     path('tutoringsstudent/', views.tutoring_list_student, name='tutoringsstudent'),
     path('newtutoring/', views.new_tutoring, name='newtutoring'),
     path('tutoringreservation/<int:tutoring_id>/', views.tutoring_reservation, name='tutoringreservation'),
-    path('reservationconfirmation/<int:reservation_id>/', views.reservation_confirmation, name='reservationconfirmation'),
+    path('reservationconfirmation/<str:reservation_id>/', views.reservation_confirmation, name='reservationconfirmation'),
     path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
     path('attendance_list/<int:tutoring_id>', views.attendance_list, name='attendance_list'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

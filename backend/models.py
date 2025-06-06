@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from datetime import time
+import string
+import random
 
 class Teacher(models.Model):
     id = models.AutoField(primary_key=True)
@@ -10,6 +12,7 @@ class Teacher(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=128)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='teacher_profile')
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
     def save(self, *args, **kwargs):
     # Solo encripta si la contraseña no está ya encriptada
@@ -51,9 +54,13 @@ class Tutoring(models.Model):
     @property
     def spots_left(self):
         return self.max_students - self.current_students_count
-    
+
+def generate_unique_id(length=6):
+    characters = string.ascii_uppercase + string.digits  # Letras mayúsculas y números
+    return ''.join(random.choices(characters, k=length))
+
 class Reservation(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=10, editable=False, unique=True, default=generate_unique_id)
     student = models.ForeignKey(Student, on_delete=models.CASCADE,related_name='reservations')
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,related_name='reservations')
     tutoring = models.ForeignKey(Tutoring, on_delete=models.CASCADE,related_name='reservations')
