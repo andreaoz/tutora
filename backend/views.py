@@ -282,3 +282,4 @@ def attendance_list(request, tutoring_id):
         'reservations': reservations,
         'teacher': teacher,
     })
+
