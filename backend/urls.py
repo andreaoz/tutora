@@ -15,7 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -23,11 +24,21 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.home,name="home"),
-    path('login/', views.teacher_login, name='login'),
-    path('signup/', views.teacher_signup, name='signup'),
-    path('logout/', views.teacher_logout, name='logout'),
-    path('tutoringsteacher/', views.tutoring_list_teacher, name='tutoringsteacher'),
+
+    #Using routes
+    path('backend/', include('backend.routes')),
+
+    #Templates
+    #path('',views.home,name="home"),
+
+    re_path(r'^.*', TemplateView.as_view(template_name='index.html')),
+
+    #path('login/', views.teacher_login, name='login'),
+    #path('login/', TemplateView.as_view(template_name="index.html")),
+
+    #path('signup/', views.teacher_signup, name='signup'),
+    #path('logout/', views.teacher_logout, name='logout'),
+    #path('tutoringsteacher/', views.tutoring_list_teacher, name='tutoringsteacher'),
     path('tutoringsteacher/past/', views.tutoring_past_teacher, name='tutoring_past_teacher'),
     path('student/', views.student_options, name='student_options'),
     path('tutoringsstudent/', views.tutoring_list_student, name='tutoringsstudent'),
@@ -40,3 +51,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
