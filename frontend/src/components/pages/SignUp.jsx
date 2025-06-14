@@ -130,6 +130,11 @@ export default function Signup() {
         </div>
       </form>
     </div>
+
+        <footer className="custom-footer">
+            <small>&copy; 2025 Tutora</small>
+        </footer>
+
     </div>
   );
 }

@@ -111,50 +111,55 @@ def tutoring_past_teacher(request):
         'teacher': teacher,
     })
 
+@csrf_exempt
 @login_required
-def new_tutoring(request):
+def add_tutoring(request):
+    # Find user first
     print("Usuario loggeado:", request.user)
     print("ID del usuario:", request.user.id)
     print("¿Está autenticado?", request.user.is_authenticated)
-
-    # Obtener el maestro al inicio
+    
     try:
         teacher = Teacher.objects.get(user=request.user)
         print("¡Maestro encontrado manualmente!", teacher)
+
     except Teacher.DoesNotExist:
         teacher = None
         print("Error: El usuario loggeado no tiene un objeto Teacher asociado.")
-        messages.error(request, "Tu cuenta no está asociada a un perfil de profesor.")
-        return render(request, 'new_tutoring.html')
+        return JsonResponse({'success': False, 'error': 'No teacher found.'}, status=400)
 
     if request.method == 'POST':
-        course = request.POST.get('course')
-        tutoring_date = request.POST.get('tutoring_date')
-        tutoring_time = request.POST.get('tutoring_time')
-        classroom = request.POST.get('classroom')
-        semester = request.POST.get('semester')
-        max_students = int(request.POST['max_students'])
+        try: 
+            data = json.loads(request.body)
 
+            course = data.get('course')
+            tutoring_date = data.get('tutoring_date')
+            tutoring_time = data.get('tutoring_time')
+            classroom = data.get('classroom')
+            semester = data.get('semester')
+            max_students = int(data['max_students'])
 
-        if all([course, tutoring_date, tutoring_time, classroom, semester, max_students]) and teacher:
-            Tutoring.objects.create(
-                course=course,
-                tutoring_date=tutoring_date,
-                tutoring_time=tutoring_time,
-                classroom=classroom,
-                semester=semester,
-                max_students=max_students,
-                teacher=teacher
-            )
-            print("¡Tutoring guardado exitosamente!")
-            #messages.success(request, "Tutoring created successfully.")
-            return redirect('tutoringsteacher')
-        else:
-            print("Error: Faltan datos o el profesor no está asociado.")
-            messages.error(request, "Por favor, completa todos los campos para crear la asesoría.")
+            #saves new tutoring
+            if all([course, tutoring_date, tutoring_time, classroom, semester, max_students]) and teacher:
+                Tutoring.objects.create(
+                    course=course,
+                    tutoring_date=tutoring_date,
+                    tutoring_time=tutoring_time,
+                    classroom=classroom,
+                    semester=semester,
+                    max_students=max_students,
+                    teacher=teacher
+                )
+                print("¡Tutoring guardado exitosamente!")
+                return JsonResponse({'success': True, 'message': 'Tutoring added successfully.'})
+            
+            else:
+                return JsonResponse({'success': False, 'error': 'Complete all data to add tutoring.'}, status=400)
 
-    # Aquí teacher siempre está definido (o se ha hecho un return antes)
-    return render(request, 'new_tutoring.html', {'teacher': teacher})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500) 
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 def student_options(request):
     return render(request,"student_options.html")

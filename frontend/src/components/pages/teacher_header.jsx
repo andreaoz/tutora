@@ -65,7 +65,7 @@ const TeacherHeader = () => {
         <button className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
       </div>
       <div className="offcanvas-body d-grid gap-3">
-        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/newtutoring">
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/add_tutoring">
           <i className="bi bi-calendar-plus"></i>
           Add tutoring schedule
         </a>
