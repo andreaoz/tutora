@@ -108,6 +108,7 @@ def past_tutorings(request):
     data = {
         'past_tutorings':[
             {
+                'id' : t.id,
                 'course': t.course,
                 'teacher': {
                     'name': t.teacher.name,
@@ -334,31 +335,36 @@ def cancel_reservation(request):
 
     return render(request, 'cancel_form.html', context)
 
-@csrf_exempt
 @login_required
 def attendance_list(request, tutoring_id):
-    if request.method == 'POST':
-        teacher = Teacher.objects.get(user=request.user)
-        tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
+    teacher = Teacher.objects.get(user=request.user)
 
-        # ✅ Seguridad: solo el maestro dueño de la tutoría puede modificar
-        if tutoring.teacher != teacher:
-            return JsonResponse({'error': 'Unauthorized'}, status=403)
+    data = {
+        'tutoring_reservations':[
+            {   
+                'attendance': r.present,
+                'student': {
+                    'name' : r.student.name,
+                    'last_name': r.student.last_name,
+                    'group': r.student.group,
+                    'semester' : r.student.semester,
+                    'email' : r.student.email
+                },
+                'tutoring' : {
+                    'course' : r.tutoring.course,
+                    'teacher' : {
+                        'name' : r.teacher.name,
+                        'last_name' : r.teacher.last_name
+                    },
+                    'tutoring_date' : r.tutoring.tutoring_date,
+                    'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M')
+                },
+            }
+            for r in reservations
+        ]
+    }
 
-        try:
-            body = json.loads(request.body)
-            attendance_data = body.get('attendance', [])
-
-            for entry in attendance_data:
-                student_id = entry.get('student_id')
-                present = entry.get('present')
-
-                # ✅ Buscar la reservación y actualizar asistencia
-                reservation = Reservation.objects.get(tutoring=tutoring, student_id=student_id)
-                reservation.present = present
-                reservation.save()
-
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse(data)
 

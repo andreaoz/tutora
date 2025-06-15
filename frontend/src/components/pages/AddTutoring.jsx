@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import'../style/style.css'
+import TeacherHeader from './TeacherHeader';
 
 export default function AddTutoring() {
     const [formData, setFormData] = useState({
@@ -42,7 +43,10 @@ export default function AddTutoring() {
   };
 
   return(
+    <div>
+     <TeacherHeader/>
     <div className="bg-chalkboard vstack">
+       
         <div className="chalkboard-white">
             <div className="d-flex justify-content-start mb-3">
                 <a href="/dashboard" className="btn btn-back">Go back</a>
@@ -152,6 +156,7 @@ export default function AddTutoring() {
         <footer className="custom-footer">
             <small>&copy; 2025 Tutora</small>
         </footer>
+    </div>
     </div>
   );
 

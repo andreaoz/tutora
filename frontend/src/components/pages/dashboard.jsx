@@ -5,13 +5,19 @@ import AttendanceModal from './AttendanceModal';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTutoring, setSelectedTutoring] = useState(null);
-  const [selectedReservations, setSelectedReservations] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTutoringId, setSelectedTutoringId] = useState(null);
 
-    useEffect(() => {
-    console.log("showModal state changed to:", showModal);
-  }, [showModal]);
+  // Esta función se llamará al hacer clic en un botón
+  const handleOpenModal = (tutoringId) => {
+    setSelectedTutoringId(tutoringId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTutoringId(null); // Limpia el ID al cerrar
+  };
 
   useEffect(() => {
     fetch('/backend/dashboard')
@@ -30,27 +36,6 @@ export default function Dashboard() {
         console.error("Error al verificar sesión:", error);
       });
   }, []);
-
-  const handleOpenAttendanceModal = async (tutoringId) => {
-    console.log("Opening modal for tutoring ID:", tutoringId); // Add this
-    try {
-      const res = await fetch(`/backend/attendance_list/${tutoringId}/`);
-      const json = await res.json();
-      console.log("Data received from backend:", json); // <-- ADD THIS
-
-      if (res.ok) {
-        setSelectedTutoring(json.tutoring);
-        setSelectedReservations(json.reservations);
-        setShowModal(true);
-        console.log("Modal show state set to true");
-      } else {
-        alert("❌ Error loading attendance data");
-        console.error("Error response:", json);
-      }
-    } catch (err) {
-      console.error("Error loading attendance data:", err);
-    }
-  };
 
   if (!data) return <p>Loading...</p>;
 
@@ -80,10 +65,7 @@ export default function Dashboard() {
 
                   <div className="d-flex justify-content-end gap-2 mt-3">
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1" 
-                      onClick={(e) => { // Add 'e' as the event argument
-                        e.preventDefault(); // Prevent default link behavior
-                        handleOpenAttendanceModal(tutoring.id);
-                      }}>
+                    onClick={() => handleOpenModal(tutoring.id)}>
                       <i className="bi bi-list-check"></i> List
                     </a>
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
@@ -130,10 +112,7 @@ export default function Dashboard() {
 
                   <div className="d-flex justify-content-end gap-2 mt-4">
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1" 
-                      onClick={(e) => { // Add 'e' as the event argument
-                        e.preventDefault(); // Prevent default link behavior
-                        handleOpenAttendanceModal(tutoring.id);
-                      }}>
+                    onClick={() => handleOpenModal(tutoring.id)}>
                       <i className="bi bi-list-check"></i> List
                     </a>
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
@@ -173,12 +152,10 @@ export default function Dashboard() {
       <small>&copy; 2025 Tutora</small>
     </footer>
 
-    <AttendanceModal
-      show={showModal}
-      onClose={() => setShowModal(false)}
-      tutoring={selectedTutoring}
-      reservations={selectedReservations}
-      tutoringId={selectedTutoring?.id}
+    <AttendanceModal 
+      isOpen={isModalOpen} 
+      onClose={handleCloseModal}
+      tutoringId={selectedTutoringId}
     />
     </div>
     

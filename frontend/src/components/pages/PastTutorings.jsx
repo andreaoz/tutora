@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import'../style/style.css'
 import TeacherHeader from './TeacherHeader';
+import AttendanceModal from './AttendanceModal';
 
 export default function PastTutorings() {
     const [allTutorings, setAllTutorings] = useState([]);
     const [filteredTutorings, setFilteredTutorings] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTutoringId, setSelectedTutoringId] = useState(null);
 
     useEffect(() => {
     fetch('/backend/past_tutorings')
@@ -48,6 +51,17 @@ export default function PastTutorings() {
 
     if (filteredTutorings.length === 0 && allTutorings.length === 0) return <p>Loading...</p>;
   
+      // Esta función se llamará al hacer clic en un botón
+    const handleOpenModal = (tutoringId) => {
+      setSelectedTutoringId(tutoringId);
+      setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+      setIsModalOpen(false);
+      setSelectedTutoringId(null); // Limpia el ID al cerrar
+    };
+
 return(
     <div>
         <TeacherHeader/>
@@ -94,7 +108,11 @@ return(
                                 <td>{tutoring.time}</td>
                                 <td>{tutoring.classroom}</td>
                                 <td>{tutoring.semester}</td>
-                                <td>{tutoring.students}</td>
+                                <td>
+                                  <a onClick={() => handleOpenModal(tutoring.id)} style={{ cursor: 'pointer' }}>
+                                    {tutoring.students}
+                                  </a>
+                                </td>
                             </tr>
                         ))} 
                     </tbody>
@@ -112,6 +130,13 @@ return(
     <footer className="custom-footer container mt-4">
       <small>&copy; 2025 Tutora</small>
     </footer>
+
+    <AttendanceModal 
+      isOpen={isModalOpen} 
+      onClose={handleCloseModal}
+      tutoringId={selectedTutoringId}
+    />
+
     </div>
   );
 };
