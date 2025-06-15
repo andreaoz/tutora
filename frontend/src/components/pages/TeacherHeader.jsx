@@ -65,17 +65,25 @@ const TeacherHeader = () => {
         <button className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
       </div>
       <div className="offcanvas-body d-grid gap-3">
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/dashboard">
+          <i className="bi bi-grid"></i>
+          Teacher Dashboard
+        </a>
         <a className="btn btn-secondary d-flex align-items-center gap-2" href="/add_tutoring">
           <i className="bi bi-calendar-plus"></i>
-          Add tutoring schedule
+          Add Tutoring Schedule
         </a>
-        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/tutoring_past_teacher">
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/past_tutorings">
           <i className="bi bi-journal-text"></i>
-          Past tutorings
+          Past Tutorings
+        </a>
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href="#">
+          <i className="bi bi-search"></i>
+          Find Student
         </a>
         <a className="btn btn-signup d-flex align-items-center gap-2" href="#" onClick={logout}>
           <i className="bi bi-box-arrow-right"></i>
-          Log out
+          Log Out
         </a>
       </div>
     </div>

@@ -149,3 +149,40 @@ main {
   margin-top: auto;           /* mt-auto: empuja el footer al final si se usa flexbox */
   border-top: 1px solid #dee2e6; /* border-top border-light-subtle */
 }
+
+/* Estilo general para tablas institucionales */
+.table-green {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table-hd {
+  background-color: #9ec2a0;
+}
+
+
+/* Hover en filas */
+.table-green tbody tr:hover {
+  background-color: #f1fff4;
+  transition: background-color 0.2s ease;
+}
+
+/* Celdas centradas verticalmente */
+.table-green td, .table-green th {
+  vertical-align: middle;
+}
+
+/* Dropdown institucional */
+.teacher-select {
+  padding: 5px 8px;
+  background-color: transparent;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.teacher-select:focus {
+  outline: none;
+  border-color: #4c774e;
+  box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.3);
+}

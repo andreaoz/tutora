@@ -65,6 +65,7 @@ class Reservation(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,related_name='reservations')
     tutoring = models.ForeignKey(Tutoring, on_delete=models.CASCADE,related_name='reservations')
     reservation_date = models.DateField(auto_now_add=True)
+    present = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)

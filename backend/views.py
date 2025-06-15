@@ -33,7 +33,7 @@ def teacher_login(request):
             user = authenticate(request, username=user.username, password=password)
 
             if user is not None:
-                login(request, user)  # ahora sí: Django maneja la sesión
+                login(request, user)  # Django maneja la sesión
                 return JsonResponse({'success': True})
             else:
                 return JsonResponse({'success': False, 'error': 'Wrong password.'}, status=400)
@@ -64,13 +64,15 @@ def dashboard(request):
     data = {
             'teacher': {
                 'id': teacher.id,
-                'name': teacher.name,  # Asegúrate de tener este campo
+                'name': teacher.name,  
                 'last_name' : teacher.last_name,
                 'profile_pic': teacher.profile_image.url if teacher.profile_image else None,
             },
             'tutorings_today': [
                 {
+                    'id': t.id,
                     'course': t.course,
+                    'date' : t.tutoring_date.strftime('%d/%m/%Y'),
                     'time': t.tutoring_time.strftime('%H:%M'),
                     'classroom' : t.classroom,
                     'semester' : t.semester,
@@ -81,7 +83,9 @@ def dashboard(request):
             ],
             'tutorings_future': [
                 {
+                    'id': t.id,
                     'course': t.course,
+                    'date' : t.tutoring_date.strftime('%d/%m/%Y'),
                     'time': t.tutoring_time.strftime('%H:%M'),
                     'classroom' : t.classroom,
                     'semester' : t.semester,
@@ -94,22 +98,33 @@ def dashboard(request):
     
     return JsonResponse(data)
 
-    # return render(request, 'tutoring_list_teacher.html', {
-    #    'teacher': teacher,
-    #    'tutorings_today': tutorings_today,
-    #    'tutorings_future': tutorings_future,
-    #    })
-
 @login_required
-def tutoring_past_teacher(request):
-    today = datetime.date.today()
-    teacher = Teacher.objects.get(user=request.user)
-    tutorings_past = Tutoring.objects.filter(teacher=teacher, tutoring_date__lt=today).order_by('-tutoring_date')
+def past_tutorings(request):
 
-    return render(request, 'tutoring_past_teacher.html', {
-        'tutorings_past': tutorings_past,
-        'teacher': teacher,
-    })
+    today = datetime.date.today()
+    #teacher = Teacher.objects.get(user=request.user)
+    past_tutorings = Tutoring.objects.filter(tutoring_date__lt=today).order_by('-tutoring_date')
+
+    data = {
+        'past_tutorings':[
+            {
+                'course': t.course,
+                'teacher': {
+                    'name': t.teacher.name,
+                    'last_name': t.teacher.last_name
+                },
+                'date' : t.tutoring_date.strftime('%d/%m/%Y'),
+                'time' : t.tutoring_time.strftime('%H:%M'),
+                'classroom' : t.classroom,
+                'semester' : t.semester,
+                'students' : t.current_students_count,
+            }
+            for t in past_tutorings
+        ]
+    }
+
+    print("Number of tutorings:", past_tutorings.count)
+    return JsonResponse(data)
 
 @csrf_exempt
 @login_required
@@ -319,15 +334,31 @@ def cancel_reservation(request):
 
     return render(request, 'cancel_form.html', context)
 
+@csrf_exempt
 @login_required
 def attendance_list(request, tutoring_id):
-    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
-    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
-    teacher = Teacher.objects.get(user=request.user)
+    if request.method == 'POST':
+        teacher = Teacher.objects.get(user=request.user)
+        tutoring = get_object_or_404(Tutoring, id=tutoring_id)
 
-    return render(request, 'attendance_list.html', {
-        'tutoring': tutoring,
-        'reservations': reservations,
-        'teacher': teacher,
-    })
+        # ✅ Seguridad: solo el maestro dueño de la tutoría puede modificar
+        if tutoring.teacher != teacher:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+        try:
+            body = json.loads(request.body)
+            attendance_data = body.get('attendance', [])
+
+            for entry in attendance_data:
+                student_id = entry.get('student_id')
+                present = entry.get('present')
+
+                # ✅ Buscar la reservación y actualizar asistencia
+                reservation = Reservation.objects.get(tutoring=tutoring, student_id=student_id)
+                reservation.present = present
+                reservation.save()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 

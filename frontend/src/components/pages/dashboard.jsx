@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
 import'../style/style.css'
-import TeacherHeader from './teacher_header';
+import TeacherHeader from './TeacherHeader';
+import AttendanceModal from './AttendanceModal';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTutoring, setSelectedTutoring] = useState(null);
+  const [selectedReservations, setSelectedReservations] = useState([]);
+
+    useEffect(() => {
+    console.log("showModal state changed to:", showModal);
+  }, [showModal]);
 
   useEffect(() => {
     fetch('/backend/dashboard')
@@ -22,6 +30,27 @@ export default function Dashboard() {
         console.error("Error al verificar sesión:", error);
       });
   }, []);
+
+  const handleOpenAttendanceModal = async (tutoringId) => {
+    console.log("Opening modal for tutoring ID:", tutoringId); // Add this
+    try {
+      const res = await fetch(`/backend/attendance_list/${tutoringId}/`);
+      const json = await res.json();
+      console.log("Data received from backend:", json); // <-- ADD THIS
+
+      if (res.ok) {
+        setSelectedTutoring(json.tutoring);
+        setSelectedReservations(json.reservations);
+        setShowModal(true);
+        console.log("Modal show state set to true");
+      } else {
+        alert("❌ Error loading attendance data");
+        console.error("Error response:", json);
+      }
+    } catch (err) {
+      console.error("Error loading attendance data:", err);
+    }
+  };
 
   if (!data) return <p>Loading...</p>;
 
@@ -42,6 +71,7 @@ export default function Dashboard() {
               <div className="card h-100 shadow-sm border-success">
                 <div className="card-body">
                   <h5 className="card-title fw-bold">{tutoring.course}</h5>
+                  <p><i className="bi bi-calendar-event"></i> <strong>Date:</strong> {tutoring.date}</p>
                   <p><i className="bi bi-clock"></i> <strong>Time:</strong> {tutoring.time}</p>
                   <p><i className="bi bi-geo-alt"></i> <strong>Classroom:</strong> {tutoring.classroom}</p>
                   <p><i className="bi bi-mortarboard"></i> <strong>Semester:</strong> {tutoring.semester}</p>
@@ -49,7 +79,11 @@ export default function Dashboard() {
                   <p><i className="bi bi-person-dash"></i> <strong>Spots left:</strong> {tutoring.spots}</p>
 
                   <div className="d-flex justify-content-end gap-2 mt-3">
-                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
+                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1" 
+                      onClick={(e) => { // Add 'e' as the event argument
+                        e.preventDefault(); // Prevent default link behavior
+                        handleOpenAttendanceModal(tutoring.id);
+                      }}>
                       <i className="bi bi-list-check"></i> List
                     </a>
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
@@ -87,6 +121,7 @@ export default function Dashboard() {
               <div className="card h-100 shadow-sm border-success">
                 <div className="card-body">
                   <h5 className="card-title fw-bold">{tutoring.course}</h5>
+                  <p><i className="bi bi-calendar-event"></i> <strong>Date:</strong> {tutoring.date}</p>
                   <p><i className="bi bi-clock"></i> <strong>Time:</strong> {tutoring.time}</p>
                   <p><i className="bi bi-geo-alt"></i> <strong>Classroom:</strong> {tutoring.classroom}</p>
                   <p><i className="bi bi-mortarboard"></i> <strong>Semester:</strong> {tutoring.semester}</p>
@@ -94,7 +129,11 @@ export default function Dashboard() {
                   <p><i className="bi bi-person-dash"></i> <strong>Spots left:</strong> {tutoring.spots}</p>
 
                   <div className="d-flex justify-content-end gap-2 mt-4">
-                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
+                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1" 
+                      onClick={(e) => { // Add 'e' as the event argument
+                        e.preventDefault(); // Prevent default link behavior
+                        handleOpenAttendanceModal(tutoring.id);
+                      }}>
                       <i className="bi bi-list-check"></i> List
                     </a>
                     <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
@@ -122,7 +161,7 @@ export default function Dashboard() {
     {/* Past tutorings button */}
     <div className="container mt-4 text-end">
         <a
-          href="/tutoring_past_teacher"
+          href="/past_tutorings"
           className="btn btn-outline-secondary gap-1"
         >
           <i className="bi bi-journal-text"></i>
@@ -134,6 +173,15 @@ export default function Dashboard() {
       <small>&copy; 2025 Tutora</small>
     </footer>
 
+    <AttendanceModal
+      show={showModal}
+      onClose={() => setShowModal(false)}
+      tutoring={selectedTutoring}
+      reservations={selectedReservations}
+      tutoringId={selectedTutoring?.id}
+    />
     </div>
+    
+
   );
 }

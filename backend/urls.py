@@ -27,26 +27,14 @@ urlpatterns = [
 
     #Using routes
     path('backend/', include('backend.routes')),
-
-    #Templates
-    #path('',views.home,name="home"),
-
     re_path(r'^.*', TemplateView.as_view(template_name='index.html')),
 
-    #path('login/', views.teacher_login, name='login'),
-    #path('login/', TemplateView.as_view(template_name="index.html")),
-
-    #path('signup/', views.teacher_signup, name='signup'),
-    #path('logout/', views.teacher_logout, name='logout'),
-    #path('tutoringsteacher/', views.tutoring_list_teacher, name='tutoringsteacher'),
-    path('tutoringsteacher/past/', views.tutoring_past_teacher, name='tutoring_past_teacher'),
     path('student/', views.student_options, name='student_options'),
     path('tutoringsstudent/', views.tutoring_list_student, name='tutoringsstudent'),
-    #path('newtutoring/', views.new_tutoring, name='newtutoring'),
     path('tutoringreservation/<int:tutoring_id>/', views.tutoring_reservation, name='tutoringreservation'),
     path('reservationconfirmation/<str:reservation_id>/', views.reservation_confirmation, name='reservationconfirmation'),
     path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
-    path('attendance_list/<int:tutoring_id>', views.attendance_list, name='attendance_list'),
+    
 ]
 
 if settings.DEBUG:
