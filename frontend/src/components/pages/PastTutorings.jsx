@@ -108,8 +108,12 @@ return(
                                 <td>{tutoring.time}</td>
                                 <td>{tutoring.classroom}</td>
                                 <td>{tutoring.semester}</td>
-                                <td>
-                                  <a onClick={() => handleOpenModal(tutoring.id)} style={{ cursor: 'pointer' }}>
+                                <td className='align-center'>
+                                  <a 
+                                    onClick={() => handleOpenModal(tutoring.id)} 
+                                    style={{ cursor: 'pointer' }}
+                                    className="text-primary text-decoration-underline"
+                                  >
                                     {tutoring.students}
                                   </a>
                                 </td>

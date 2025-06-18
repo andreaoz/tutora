@@ -6,6 +6,7 @@ import Dashboard from './components/pages/Dashboard';
 import Signup from './components/pages/SignUp';
 import AddTutoring from './components/pages/AddTutoring';
 import PastTutorings from './components/pages/PastTutorings';
+import CancelReservation from './components/pages/CancelReservation';
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <Route path='/signup' element={<Signup />} />
       <Route path='/add_tutoring' element={<AddTutoring />} />
       <Route path='/past_tutorings' element={<PastTutorings />} />
+      <Route path='/cancel_reservation' element={<CancelReservation />} />
     </Routes>
   );
 }

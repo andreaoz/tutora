@@ -18,6 +18,8 @@ import json
 current_tz = timezone.get_current_timezone()
 print(current_tz)
 
+#TEACHERS VIEWS
+
 @csrf_exempt
 def teacher_login(request):
     if request.method == 'POST':
@@ -177,8 +179,83 @@ def add_tutoring(request):
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-def student_options(request):
-    return render(request,"student_options.html")
+
+@csrf_exempt
+def teacher_signup(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            name = data.get('name')
+            last_name = data.get('last_name')
+            email = data.get('email')
+            password = data.get('password')
+            school_password = data.get('school_password')  # contraseña secreta
+
+            if school_password != settings.SCHOOL_PASSWORD:
+                return JsonResponse({'success': False, 'error': 'Invalid school password.'}, status=400)
+
+            # Verifica que el correo no esté ya registrado
+            if User.objects.filter(username=email).exists():
+                return JsonResponse({'success': False, 'error': 'Email already registered.'}, status=400)
+
+            # Crear el usuario Django
+            user = User.objects.create_user(
+                username=email,
+                password=password,
+            )
+
+            # Guarda el nuevo maestro
+            Teacher.objects.create(
+                user=user,
+                name=name,
+                last_name=last_name,
+                email=email,
+                password=make_password(password)
+            )
+            return JsonResponse({'success': True, 'message': 'Account created successfully.'})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required
+def attendance_list(request, tutoring_id):
+    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
+    teacher = Teacher.objects.get(user=request.user)
+
+    data = {
+        'tutoring_reservations':[
+            {   
+                'attendance': r.present,
+                'student': {
+                    'name' : r.student.name,
+                    'last_name': r.student.last_name,
+                    'group': r.student.group,
+                    'semester' : r.student.semester,
+                    'email' : r.student.email
+                },
+                'tutoring' : {
+                    'course' : r.tutoring.course,
+                    'teacher' : {
+                        'name' : r.teacher.name,
+                        'last_name' : r.teacher.last_name
+                    },
+                    'tutoring_date' : r.tutoring.tutoring_date,
+                    'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M')
+                },
+            }
+            for r in reservations
+        ]
+    }
+
+    return JsonResponse(data)
+
+
+# STUDENTS VIEWS
 
 def tutoring_list_student(request):
     print("Usuario loggeado:", request.user)
@@ -246,125 +323,42 @@ def reservation_confirmation(request, reservation_id):
     })
 
 @csrf_exempt
-def teacher_signup(request):
-    if request.method == 'POST':
+def cancel_reservation(request):
+    if request.method == 'GET':
+        reservation_id = request.GET.get('reservation_id')
+        if reservation_id:
+            try:
+                reservation = Reservation.objects.select_related('student', 'tutoring', 'teacher').get(id=reservation_id)
+                return JsonResponse({
+                    'reservation': {
+                        'id': reservation.id,
+                        'student': f'{reservation.student.name} {reservation.student.last_name}',
+                        'course': reservation.tutoring.course,
+                        'teacher': str(reservation.teacher),
+                        'classroom': reservation.tutoring.classroom,
+                        'reservation_date': str(reservation.reservation_date),
+                        'tutoring_time': str(reservation.tutoring.tutoring_time),
+                    }
+                })
+            except Reservation.DoesNotExist:
+                return JsonResponse({'error': 'Reservation not found.'}, status=404)
+        else:
+            return JsonResponse({'error': 'Missing reservation_id'}, status=400)
+    
+    elif request.method == 'POST':
         try:
             data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
-            name = data.get('name')
-            last_name = data.get('last_name')
-            email = data.get('email')
-            password = data.get('password')
-            school_password = data.get('school_password')  # contraseña secreta
-
-            if school_password != settings.SCHOOL_PASSWORD:
-                return JsonResponse({'success': False, 'error': 'Invalid school password.'}, status=400)
-
-            # Verifica que el correo no esté ya registrado
-            if User.objects.filter(username=email).exists():
-                return JsonResponse({'success': False, 'error': 'Email already registered.'}, status=400)
-
-            # Crear el usuario Django
-            user = User.objects.create_user(
-                username=email,
-                password=password,
-            )
-
-            # Guarda el nuevo maestro
-            Teacher.objects.create(
-                user=user,
-                name=name,
-                last_name=last_name,
-                email=email,
-                password=make_password(password)
-            )
-            return JsonResponse({'success': True, 'message': 'Account created successfully.'})
-
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
-        
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-def cancel_reservation(request):
-    context = {}
-
-    if request.method == 'POST':
-        if 'reservation_id' in request.POST:
-            reservation_id = request.POST.get('reservation_id')
+        if 'confirm_cancel' in data:
+            reservation_id = data['confirm_cancel']
             try:
                 reservation = Reservation.objects.get(id=reservation_id)
-                context['reservation'] = reservation
+                reservation.delete()
+                return JsonResponse({'success': f'Reservation #{reservation_id} has been cancelled.'})
             except Reservation.DoesNotExist:
-                context['error'] = "Reservación no encontrada."
+                return JsonResponse({'error': 'Reservation no longer exists or was already cancelled.'}, status=404)
 
-        elif 'confirm_cancel' in request.POST:
-            reservation_id = request.POST.get('confirm_cancel')
-            try:
-                reservation = Reservation.objects.get(id=reservation_id)
-                now = timezone.now() #con timezone
-
-                # Combina fecha y hora de la tutoría
-                tutoring_datetime = datetime.datetime.combine(
-                    reservation.tutoring.tutoring_date,
-                    reservation.tutoring.tutoring_time
-                )
-
-                # Asegura que esté en el mismo timezone
-                tutoring_datetime = timezone.make_aware(tutoring_datetime, timezone.get_current_timezone())
-                
-                # convertir a aware usando la zona horaria local configurada en Django
-                aware_now = timezone.make_aware(datetime.datetime.now(), timezone.get_current_timezone())
-
-                print("Hora actual (timezone.now()):", now)
-                print("Hora de la tutoría (tutoring_datetime):", tutoring_datetime)
-                print("Diferencia:", tutoring_datetime - now)
-                print("Hora local (sin timezone):", aware_now)
-
-                # Verifica si faltan más de 2 horas
-                if aware_now > tutoring_datetime:
-                    context['error'] = f"No puedes cancelar la reservación #{reservation_id} porque la tutoría ya pasó."
-                    context['reservation'] = reservation
-                elif tutoring_datetime - aware_now < datetime.timedelta(hours=2):
-                    context['error'] = f"No puedes cancelar la reservación #{reservation_id} porque faltan menos de 2 horas para la tutoría."
-                    context['reservation'] = reservation
-                else:
-                    reservation.delete()
-                    context['success'] = f"La reservación #{reservation_id} ha sido cancelada exitosamente."
-            except Reservation.DoesNotExist:
-                context['error'] = "La reservación ya no existe o ya fue cancelada."
-
-    return render(request, 'cancel_form.html', context)
-
-@login_required
-def attendance_list(request, tutoring_id):
-    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
-    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
-    teacher = Teacher.objects.get(user=request.user)
-
-    data = {
-        'tutoring_reservations':[
-            {   
-                'attendance': r.present,
-                'student': {
-                    'name' : r.student.name,
-                    'last_name': r.student.last_name,
-                    'group': r.student.group,
-                    'semester' : r.student.semester,
-                    'email' : r.student.email
-                },
-                'tutoring' : {
-                    'course' : r.tutoring.course,
-                    'teacher' : {
-                        'name' : r.teacher.name,
-                        'last_name' : r.teacher.last_name
-                    },
-                    'tutoring_date' : r.tutoring.tutoring_date,
-                    'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M')
-                },
-            }
-            for r in reservations
-        ]
-    }
-
-    return JsonResponse(data)
+    return JsonResponse({'error': 'Unsupported method'}, status=405)
 
