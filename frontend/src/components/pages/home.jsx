@@ -28,7 +28,7 @@ export default function Home() {
           <>
             {/* Botón Atrás */}
             <div className="d-flex justify-content-start mb-3">
-              <button href="/" className="btn btn-back">
+              <button onClick={() => setShowStudentOptions(false)} className="btn btn-back">
                 Go back
               </button>
             </div>
@@ -38,7 +38,7 @@ export default function Home() {
               <h5>What do you want to do?</h5>
               <br />
               <div className="d-grid gap-3 mx-auto" style={{ maxWidth: '250px' }}>
-                <a href="#" className="btn btn-login">
+                <a href="/tutoring_calendar" className="btn btn-login">
                   Book a Tutoring
                 </a>
                 <a href="/cancel_reservation" className="btn btn-signup">

@@ -14,5 +14,6 @@ urlpatterns = [
     path('attendance_list/<int:tutoring_id>', views.attendance_list, name='attendance_list'),
     path(route='cancel_reservation', view=views.cancel_reservation, name='cancel_reservation'),
     path(route='student_list', view=views.student_list, name='student_list'),
+    path(route='tutoring_calendar', view=views.tutoring_calendar, name='tutoring_calendar'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

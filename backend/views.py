@@ -291,19 +291,63 @@ def student_list(request):
 
 # STUDENTS VIEWS
 
-def tutoring_list_student(request):
+def tutoring_calendar(request):
     print("Usuario loggeado:", request.user)
     today = datetime.date.today()
-    next_week = today + datetime.timedelta(days=7)
-
-    tutorings_today = Tutoring.objects.filter(tutoring_date=today)
-    tutorings_future = Tutoring.objects.filter(tutoring_date__gt=today, tutoring_date__lte=next_week)
     
-    #teacher = Teacher.objects.all()
-    return render(request, 'tutoring_list_student.html', {
-        'tutorings_today': tutorings_today,
-        'tutorings_future': tutorings_future,
-        })
+    # Función para obtener solo días laborales (lunes a viernes)
+    def get_weekdays_range(start_date, days=7):
+        weekdays = []
+        current_date = start_date
+        while len(weekdays) < days:
+            # 0=lunes, 1=martes, ..., 6=domingo
+            if current_date.weekday() < 5:  # Solo lunes a viernes (0-4)
+                weekdays.append(current_date)
+            current_date += datetime.timedelta(days=1)
+        return weekdays
+    
+    # Obtener los próximos 7 días laborales
+    weekdays = get_weekdays_range(today, 7)
+    next_week_end = weekdays[-1] if weekdays else today
+    
+    # Filtrar asesorías solo para días laborales
+    tutorings_queryset = Tutoring.objects.filter(
+        tutoring_date__gte=today,
+        tutoring_date__lte=next_week_end,
+        tutoring_date__week_day__in=[2, 3, 4, 5, 6]  # Lunes=2, Viernes=6 en Django
+    ).order_by('tutoring_date', 'tutoring_time')
+    
+    def serialize_tutoring(tutoring):
+        return {
+            'id': tutoring.id,
+            'course': tutoring.course,
+            'tutoring_date': tutoring.tutoring_date.isoformat(),
+            'tutoring_time': tutoring.tutoring_time.strftime('%H:%M'),
+            'classroom': tutoring.classroom,
+            'semester': tutoring.semester,
+            'max_students': tutoring.max_students,
+            'teacher': {
+                'id': tutoring.teacher.id,
+                'name': tutoring.teacher.name,
+                'last_name': tutoring.teacher.last_name,
+                'email': tutoring.teacher.email,
+            }
+        }
+    
+    # Organizar asesorías por fecha
+    tutorings_by_date = {}
+    for tutoring in tutorings_queryset:
+        date_key = tutoring.tutoring_date.isoformat()
+        if date_key not in tutorings_by_date:
+            tutorings_by_date[date_key] = []
+        tutorings_by_date[date_key].append(serialize_tutoring(tutoring))
+    
+    data = {
+        'weekdays': [date.isoformat() for date in weekdays],
+        'tutorings_by_date': tutorings_by_date,
+    }
+    
+    return JsonResponse(data, safe=False)
 
 def tutoring_reservation(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)

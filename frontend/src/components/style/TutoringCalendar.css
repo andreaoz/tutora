@@ -1,0 +1,330 @@
+/* TutoringCalendar.css */
+
+.calendar-container {
+  background-image: 
+    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-color: #2d4a3e;
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+.calendar-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 1px, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+.calendar-title {
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  font-weight: bold;
+  margin-bottom: 2rem;
+  background: rgba(0,0,0,0.3);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* Tarjetas de días */
+.day-card {
+  background: rgba(245, 245, 245, 0.95);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  border: 2px solid rgba(255,255,255,0.5);
+  backdrop-filter: blur(10px);
+  min-height: 450px;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4a90e2, #7b68ee, #50c878);
+}
+
+.day-header {
+  background: rgba(255,255,255,0.9);
+  padding: 1rem;
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.day-title {
+  margin: 0;
+  color: #2c3e50;
+  font-weight: bold;
+  text-transform: capitalize;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.day-content {
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollbar personalizado */
+.day-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.day-content::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+.day-content::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.3);
+  border-radius: 3px;
+}
+
+.day-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+/* Tarjetas de asesorías */
+.tutoring-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 
+    0 4px 15px rgba(0,0,0,0.1),
+    0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tutoring-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+}
+
+.tutoring-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 25px rgba(0,0,0,0.15),
+    0 3px 10px rgba(0,0,0,0.1);
+}
+
+.tutoring-card .card-body {
+  padding: 1rem;
+}
+
+.tutoring-time-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.tutoring-course {
+  color: #2c3e50;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.tutoring-teacher {
+  color: #34495e;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.tutoring-details {
+  margin-bottom: 1rem;
+}
+
+.tutoring-details small {
+  color: #7f8c8d;
+  line-height: 1.4;
+}
+
+/* Botón de reservar */
+.btn-reserve {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.btn-reserve:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.btn-reserve:active {
+  transform: translateY(0);
+}
+
+/* Sin asesorías */
+.no-tutorings {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.no-tutorings p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Modal de reserva */
+.reservation-modal .modal-content {
+  background: rgba(245, 245, 245, 0.98);
+  border-radius: 15px;
+  border: 2px solid rgba(255,255,255,0.5);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.reservation-modal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: 15px 15px 0 0;
+}
+
+.reservation-modal .modal-title {
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.reservation-details h6 {
+  color: #2c3e50;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.reservation-details p {
+  margin-bottom: 0.7rem;
+  color: #34495e;
+}
+
+.reservation-details strong {
+  color: #2c3e50;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .mobile-day {
+    margin-bottom: 1.5rem;
+  }
+  
+  .calendar-title {
+    font-size: 1.5rem;
+    padding: 0.8rem;
+  }
+  
+  .day-card {
+    min-height: auto;
+  }
+  
+  .day-content {
+    max-height: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .desktop-day {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+  }
+  
+  .desktop-day:first-child {
+    margin-left: 0;
+  }
+  
+  .desktop-day:last-child {
+    margin-right: 0;
+  }
+}
+
+/* Efectos de carga */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.day-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.tutoring-card {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Mejoras de accesibilidad */
+.btn-reserve:focus,
+.btn-reserve:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.modal-content:focus {
+  outline: none;
+}
+
+/* Efectos adicionales para el tema pizarrón */
+.calendar-container {
+  background-image: 
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(45deg, rgba(255,255,255,0.01) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.01) 25%, transparent 25%);
+  background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
+}
