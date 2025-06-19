@@ -61,7 +61,7 @@ const TutoringCalendar = () => {
         <div className="row mb-4">
           <div className="col-12 text-center">
             <h2 className="calendar-title">
-              📚 Asesorías Disponibles - Próximos 7 Días Laborales
+              <i class="bi bi-calendar-check"></i> Available Tutorings
             </h2>
           </div>
         </div>

@@ -1,9 +1,7 @@
 /* TutoringCalendar.css */
 
 .calendar-container {
-  background-image: 
-    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-image: url('./board.jpg');
   background-size: 20px 20px;
   background-color: #2d4a3e;
   background-attachment: fixed;
@@ -38,7 +36,7 @@
 
 /* Tarjetas de días */
 .day-card {
-  background: rgba(245, 245, 245, 0.95);
+  background: rgba(240, 255, 240, 0.95);
   border-radius: 12px;
   box-shadow: 
     0 8px 32px rgba(0,0,0,0.3),
@@ -57,7 +55,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #4a90e2, #7b68ee, #50c878);
+  background: linear-gradient(90deg, #2e8b57, #3cb371, #66cdaa);
 }
 
 .day-header {
@@ -72,7 +70,7 @@
 
 .day-title {
   margin: 0;
-  color: #2c3e50;
+  color: #1e3c2a;
   font-weight: bold;
   text-transform: capitalize;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -123,7 +121,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+  background: linear-gradient(90deg, #006400, #228b22, #32cd32);
 }
 
 .tutoring-card:hover {
@@ -138,7 +136,7 @@
 }
 
 .tutoring-time-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 15px;
@@ -146,18 +144,18 @@
   font-weight: bold;
   display: inline-block;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(60,179,113, 0.3);
 }
 
 .tutoring-course {
-  color: #2c3e50;
+  color: #1e3c2a;
   font-weight: bold;
   margin-bottom: 0.5rem;
   font-size: 1rem;
 }
 
 .tutoring-teacher {
-  color: #34495e;
+  color: #2f4f4f;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
@@ -167,13 +165,13 @@
 }
 
 .tutoring-details small {
-  color: #7f8c8d;
+  color: #6c8c7a;
   line-height: 1.4;
 }
 
 /* Botón de reservar */
 .btn-reserve {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2e8b57  0%, #3cb371  100%);
   border: none;
   color: white;
   font-weight: bold;
@@ -186,9 +184,9 @@
 }
 
 .btn-reserve:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  background: linear-gradient(135deg, #1f603f  0%, #2f8d5d  100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px rgba(60,179,113, 0.4);
   color: white;
 }
 
@@ -200,7 +198,7 @@
 .no-tutorings {
   text-align: center;
   padding: 2rem 1rem;
-  color: #7f8c8d;
+  color: #6c8c7a;
   font-style: italic;
 }
 
@@ -219,7 +217,7 @@
 }
 
 .reservation-modal .modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2e8b57  0%, #3cb371  a2 100%);
   color: white;
   border-bottom: none;
   border-radius: 15px 15px 0 0;
@@ -311,7 +309,7 @@
 /* Mejoras de accesibilidad */
 .btn-reserve:focus,
 .btn-reserve:focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid #3cb371;
   outline-offset: 2px;
 }
 
@@ -321,10 +319,6 @@
 
 /* Efectos adicionales para el tema pizarrón */
 .calendar-container {
-  background-image: 
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(45deg, rgba(255,255,255,0.01) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255,255,255,0.01) 25%, transparent 25%);
+  background-image: url('./board.jpg');
   background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
 }
