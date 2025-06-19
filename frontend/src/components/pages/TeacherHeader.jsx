@@ -77,7 +77,7 @@ const TeacherHeader = () => {
           <i className="bi bi-journal-text"></i>
           Past Tutorings
         </a>
-        <a className="btn btn-secondary d-flex align-items-center gap-2" href="#">
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href="/student_list">
           <i className="bi bi-search"></i>
           Find Student
         </a>

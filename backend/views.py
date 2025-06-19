@@ -254,6 +254,40 @@ def attendance_list(request, tutoring_id):
 
     return JsonResponse(data)
 
+@login_required
+def student_list(request):
+
+    today = datetime.date.today()
+    past_reservations = Reservation.objects.filter(tutoring__tutoring_date__lt=today).order_by('-tutoring__tutoring_date')
+
+    data = {
+        'past_reservations':[
+            {
+                'id' : r.id,
+                'student' : {
+                    'name': r.student.name,
+                    'last_name': r.student.last_name
+                },
+                'tutoring' : {
+                    'course': r.tutoring.course,
+                    'teacher': {
+                        'name': r.teacher.name,
+                        'last_name': r.teacher.last_name,
+                    },
+                    'tutoring_date' : r.tutoring.tutoring_date.strftime('%d/%m/%Y'),
+                    'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M'),
+                    'classroom' : r.tutoring.classroom,
+                    'semester' : r.tutoring.semester,
+                },
+
+            }
+            for r in past_reservations
+        ]
+    }
+
+    print("Number of tutorings:", past_reservations.count())
+    return JsonResponse(data)
+
 
 # STUDENTS VIEWS
 
