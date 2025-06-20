@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../style/TutoringCalendar.css'; // Importar el CSS separado
+import '../style/TutoringCalendar.css';
 
 const TutoringCalendar = () => {
   const [weekdays, setWeekdays] = useState([]);
@@ -57,7 +57,12 @@ const TutoringCalendar = () => {
 
   return (
     <div className="calendar-container">
+
       <div className="container-fluid py-4">
+        <div className="d-flex justify-content-start mb-3">
+          <a href="/" className="btn btn-back-cal">Go back</a>
+        </div>
+
         <div className="row mb-4">
           <div className="col-12 text-center">
             <h2 className="calendar-title">
@@ -66,54 +71,8 @@ const TutoringCalendar = () => {
           </div>
         </div>
 
-        {/* Vista móvil - Vertical */}
-        <div className="row d-lg-none">
-          {weekdays.map((date) => (
-            <div key={date} className="col-12 mb-4">
-              <div className="day-card mobile-day">
-                <div className="day-header">
-                  <h4 className="day-title">{formatDate(date)}</h4>
-                </div>
-                <div className="day-content">
-                  {tutoringsByDate[date] && tutoringsByDate[date].length > 0 ? (
-                    tutoringsByDate[date].map((tutoring) => (
-                      <div key={tutoring.id} className="tutoring-card mb-3">
-                        <div className="card-body">
-                          <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h6 className="tutoring-course">{tutoring.course}</h6>
-                            <span className="tutoring-time">{tutoring.tutoring_time}</span>
-                          </div>
-                          <p className="tutoring-teacher mb-2">
-                            👨‍🏫 {tutoring.teacher.name} {tutoring.teacher.last_name}
-                          </p>
-                          <div className="tutoring-details">
-                            <small className="text-muted d-block">
-                              📍 Salón: {tutoring.classroom} | 
-                              🎓 Semestre: {tutoring.semester} | 
-                              👥 Max: {tutoring.max_students}
-                            </small>
-                          </div>
-                          <button 
-                            className="btn btn-reserve btn-sm mt-2 w-100"
-                          >
-                            📝 Reservar Asesoría
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="no-tutorings">
-                      <p>No hay asesorías disponibles</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Vista desktop - Horizontal */}
-        <div className="row d-none d-lg-flex">
+        <div className="row d-flex flex-column flex-lg-row">
           {weekdays.map((date) => (
             <div key={date} className="col">
               <div className="day-card desktop-day">
@@ -124,31 +83,36 @@ const TutoringCalendar = () => {
                   {tutoringsByDate[date] && tutoringsByDate[date].length > 0 ? (
                     tutoringsByDate[date].map((tutoring) => (
                       <div key={tutoring.id} className="tutoring-card mb-2">
+
+                        <button 
+                          className='text-start w-100 border-0 p-0'
+                          onClick={""} // function to book tutoring
+                          style={{ background: 'none' }}
+                        >
                         <div className="card-body p-2">
-                          <div className="tutoring-time-badge mb-1">
-                            {tutoring.tutoring_time}
+                          <div className='d-flex align-items-center mb-1'>
+                            <div className="tutoring-time-badge me-2">
+                              {tutoring.tutoring_time}
+                            </div>
+                            <h6 className="tutoring-course  mb-0">{tutoring.course}</h6>
                           </div>
-                          <h6 className="tutoring-course">{tutoring.course}</h6>
+
                           <p className="tutoring-teacher mb-1">
-                            👨‍🏫 {tutoring.teacher.name}
+                            <i class="bi bi-person-lines-fill"></i> {tutoring.teacher.name} {tutoring.teacher.last_name}
                           </p>
                           <div className="tutoring-details mb-2">
                             <small className="text-muted">
-                              📍 {tutoring.classroom}<br/>
-                              🎓 {tutoring.semester}° | 👥 {tutoring.max_students}
+                              <i className="bi bi-geo-alt"></i> {tutoring.classroom} | <i className="bi bi-mortarboard"></i> {tutoring.semester}° | <i className="bi bi-people"></i> {tutoring.max_students}
                             </small>
                           </div>
-                          <button 
-                            className="btn btn-reserve btn-sm w-100"
-                          >
-                            Reservar
-                          </button>
                         </div>
+                        </button>
+
                       </div>
                     ))
                   ) : (
                     <div className="no-tutorings">
-                      <p>Sin asesorías</p>
+                      <p>No tutorings</p>
                     </div>
                   )}
                 </div>
@@ -156,6 +120,10 @@ const TutoringCalendar = () => {
             </div>
           ))}
         </div>
+        <footer className="custom-footer">
+            <small>&copy; 2025 Tutora</small>
+        </footer>
+
       </div>
     </div>
   );
