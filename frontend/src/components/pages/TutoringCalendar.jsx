@@ -23,23 +23,27 @@ const TutoringCalendar = () => {
     }
   };
 
+  const createLocalDate = (dateString) => {
+    return new Date(dateString + 'T12:00:00');
+  };
+
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    const date = createLocalDate(dateString);
     const options = { 
       weekday: 'long', 
       day: 'numeric', 
       month: 'short' 
     };
-    return date.toLocaleDateString('es-ES', options);
+    return date.toLocaleDateString('en-EN', options);
   };
 
   const formatDateShort = (dateString) => {
-    const date = new Date(dateString);
+    const date = createLocalDate(dateString);
     const options = { 
       weekday: 'short', 
       day: 'numeric' 
     };
-    return date.toLocaleDateString('es-ES', options);
+    return date.toLocaleDateString('en-EN', options);
   };
 
   if (loading) {

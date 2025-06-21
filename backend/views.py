@@ -294,6 +294,7 @@ def student_list(request):
 def tutoring_calendar(request):
     print("Usuario loggeado:", request.user)
     today = datetime.date.today()
+    print("Today: ", today)
     
     # Función para obtener solo días laborales (lunes a viernes)
     def get_weekdays_range(start_date, days=7):
@@ -304,7 +305,9 @@ def tutoring_calendar(request):
             if current_date.weekday() < 5:  # Solo lunes a viernes (0-4)
                 weekdays.append(current_date)
             current_date += datetime.timedelta(days=1)
+        
         return weekdays
+  
     
     # Obtener los próximos 7 días laborales
     weekdays = get_weekdays_range(today, 7)
@@ -316,6 +319,7 @@ def tutoring_calendar(request):
         tutoring_date__lte=next_week_end,
         tutoring_date__week_day__in=[2, 3, 4, 5, 6]  # Lunes=2, Viernes=6 en Django
     ).order_by('tutoring_date', 'tutoring_time')
+    
     
     def serialize_tutoring(tutoring):
         return {
@@ -338,6 +342,7 @@ def tutoring_calendar(request):
     tutorings_by_date = {}
     for tutoring in tutorings_queryset:
         date_key = tutoring.tutoring_date.isoformat()
+        
         if date_key not in tutorings_by_date:
             tutorings_by_date[date_key] = []
         tutorings_by_date[date_key].append(serialize_tutoring(tutoring))
