@@ -9,6 +9,7 @@ import PastTutorings from './components/pages/PastTutorings';
 import CancelReservation from './components/pages/CancelReservation';
 import StudentList from './components/pages/StudentList';
 import TutoringCalendar from './components/pages/TutoringCalendar';
+import TutoringReservation from './components/pages/TutoringReservation';
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Route path='/cancel_reservation' element={<CancelReservation />} />
       <Route path='/student_list' element={<StudentList />} />
       <Route path='/tutoring_calendar' element={<TutoringCalendar />} />
+      <Route path='/tutoring_reservation/:tutoringId' element={<TutoringReservation />} />
     </Routes>
   );
 }

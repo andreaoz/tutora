@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import '../style/TutoringCalendar.css';
 
 const TutoringCalendar = () => {
   const [weekdays, setWeekdays] = useState([]);
   const [tutoringsByDate, setTutoringsByDate] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTutorings();
@@ -44,6 +46,10 @@ const TutoringCalendar = () => {
       day: 'numeric' 
     };
     return date.toLocaleDateString('en-EN', options);
+  };
+
+    const CreateReservation = (tutoringID) => {
+    navigate(`/tutoring_reservation/${tutoringID}`);
   };
 
   if (loading) {
@@ -90,7 +96,7 @@ const TutoringCalendar = () => {
 
                         <button 
                           className='text-start w-100 border-0 p-0'
-                          onClick={""} // function to book tutoring
+                          onClick={() => CreateReservation(tutoring.id)} // function to book tutoring
                           style={{ background: 'none' }}
                         >
                         <div className="card-body p-2">

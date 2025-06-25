@@ -354,43 +354,77 @@ def tutoring_calendar(request):
     
     return JsonResponse(data, safe=False)
 
+@csrf_exempt
 def tutoring_reservation(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)
 
+    if request.method == 'GET':
+        # Devolver los detalles de la tutoría
+        return JsonResponse({
+            "id": tutoring.id,
+            "course": tutoring.course,
+            "teacher": {
+                "name": tutoring.teacher.name,
+                "last_name": tutoring.teacher.last_name
+            },
+            "tutoring_date": tutoring.tutoring_date, # Asegúrate de que este campo exista o ajusta el nombre
+            "tutoring_time": tutoring.tutoring_time, # Asegúrate de que este campo exista o ajusta el nombre
+            "classroom": tutoring.classroom, # Asegúrate de que este campo exista o ajusta el nombre
+            "spots_left": tutoring.spots_left
+        })
+    
     if tutoring.spots_left <= 0:
-        messages.error(request, "Sorry, no spots left in this tutoring.")
-        return redirect('tutoringsstudent')
+        return JsonResponse({"error": "No spots left in this tutoring."}, status=400)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        last_name = request.POST.get('last_name')
-        semester = request.POST.get('semester')
-        group = request.POST.get('group')
-        email = request.POST.get('email')
+        try:
+            data = json.loads(request.body)
 
-        # Puedes evitar duplicados buscando por email (o nombre+grupo si lo prefieres)
-        student, created = Student.objects.get_or_create(
-            email=email,
-            defaults={
-                'name': name,
-                'last_name': last_name,
-                'semester': semester,
-                'group': group
-            }
-        )
+            name = data.get('name')
+            last_name = data.get('last_name')
+            semester = data.get('semester')
+            group = data.get('group')
+            email = data.get('email')
 
-        # Crear la reserva
-        reservation = Reservation.objects.create(
-            student=student,
-            teacher=tutoring.teacher,
-            tutoring=tutoring
-        )
+            if not all([name, last_name, semester, group, email]):
+                return JsonResponse({"error": "Missing fields."}, status=400)
+            
+            # saves new student 
+            student, created = Student.objects.get_or_create(
+                email=email,
+                defaults={
+                    'name': name,
+                    'last_name': last_name,
+                    'semester': semester,
+                    'group': group
+                }
+            )
 
+            # saves new reservation
+            reservation = Reservation.objects.create(
+                student=student,
+                teacher=tutoring.teacher,
+                tutoring=tutoring
+            )
 
-        #messages.success(request, '¡Reserva realizada con éxito!')
-        return redirect('reservationconfirmation',reservation_id=reservation.id)  # o donde quieras llevar al alumno
+            return JsonResponse({
+                "message": "Reservation successful",
+                "reservation_id": reservation.id,
+                "student": {
+                    "name": student.name,
+                    "last_name": student.last_name,
+                    "email": student.email
+                },
+                "tutoring": {
+                    "id": tutoring.id,
+                    "course": tutoring.course,
+                    "teacher": tutoring.teacher.name
+                }
+            }, status=201)
 
-    return render(request, 'student_registration.html', {'tutoring': tutoring})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        
 
 def reservation_confirmation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
