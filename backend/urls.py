@@ -28,12 +28,6 @@ urlpatterns = [
     #Using routes
     path('backend/', include('backend.routes')),
     re_path(r'^.*', TemplateView.as_view(template_name='index.html')),
-
-    #path('tutoringsstudent/', views.tutoring_list_student, name='tutoringsstudent'),
-    #path('tutoringreservation/<int:tutoring_id>/', views.tutoring_reservation, name='tutoringreservation'),
-    path('reservationconfirmation/<str:reservation_id>/', views.reservation_confirmation, name='reservationconfirmation'),
-    #path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
-    
 ]
 
 if settings.DEBUG:

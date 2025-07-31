@@ -426,19 +426,6 @@ def tutoring_reservation(request, tutoring_id):
             return JsonResponse({"error": "Invalid JSON format."}, status=400)
         
 
-def reservation_confirmation(request, reservation_id):
-    reservation = get_object_or_404(Reservation, id=reservation_id)
-    tutoring = reservation.tutoring
-    student = reservation.student
-    teacher = reservation.teacher
-
-    return render(request, 'reservation_confirmation.html', {
-        'reservation': reservation,
-        'tutoring': tutoring,
-        'student': student,
-        'teacher': teacher,
-    })
-
 @csrf_exempt
 def cancel_reservation(request):
     if request.method == 'GET':
