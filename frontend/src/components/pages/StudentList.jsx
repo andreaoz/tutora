@@ -4,6 +4,7 @@ import TeacherHeader from './TeacherHeader';
 
 export default function StudentList() {
     const [allReservations, setAllReservations] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
     fetch('/backend/student_list')
@@ -25,6 +26,11 @@ export default function StudentList() {
       });
     }, []);
 
+    const filteredReservations = allReservations.filter((reservation) => {
+            const studentName = `${reservation.student.name} ${reservation.student.last_name}`.toLowerCase();
+            return studentName.includes(searchTerm.toLowerCase());
+        });
+
 return(
     <div>
         <TeacherHeader/>
@@ -33,8 +39,23 @@ return(
                 <i className="bi bi-journal-text"></i> Student List
             </h2>
             <br />
+            
+            {/* Barra de búsqueda */}
+            <div className="input-group mb-4">
+                <span className="input-group-text">
+                    <i className="bi bi-search"></i>
+                </span>
+                <input 
+                    type="text"
+                    className="form-control"
+                    placeholder="Filter by student name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+
             <div className='table-responsive'> 
-                {allReservations.length > 0 && (
+                {filteredReservations.length > 0 ? (
                 <table className="table table-bordered border-success-subtle align-middle table-green">
                     <thead className='table-success'>
                     <tr>
@@ -50,7 +71,7 @@ return(
                     </thead>
             
                     <tbody>
-                        {allReservations.map((reservation, i) => (
+                        {filteredReservations.map((reservation, i) => (
                             <tr key={i}>
                                 <td>{reservation.id}</td>
                                 <td>{reservation.student.name} {reservation.student.last_name}</td>
@@ -65,6 +86,10 @@ return(
                         ))} 
                     </tbody>
                     </table>
+                    ):(
+                        <h4 className="text-dark d-flex align-items-center">
+                            {allReservations.length > 0 ? 'No students found with that name.' : 'No students registered.'}
+                        </h4>
                     )}
                 {allReservations.length == 0 && (
                     <h4 className="text-dark d-flex align-items-center">
