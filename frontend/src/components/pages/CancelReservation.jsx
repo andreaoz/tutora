@@ -29,7 +29,7 @@ function CancelReservationPage() {
         }
     };
 
-    // Función para manejar el clic en el botón "Confirmar Cancelación"
+    // Función para manejar el clic en el botón "Confirmar Delete"
     const handleConfirmButtonClick = () => {
         setShowConfirmModal(true); // Muestra el modal
     };

@@ -2,11 +2,16 @@ import { useEffect, useState } from 'react';
 import'../style/style.css'
 import TeacherHeader from './TeacherHeader';
 import AttendanceModal from './AttendanceModal';
+import EditTutoringModal from './EditTutoringModal';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTutoringId, setSelectedTutoringId] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [error, setError] = useState('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [tutoringToEdit, setTutoringToEdit] = useState(null);
 
   // Esta función se llamará al hacer clic en un botón
   const handleOpenModal = (tutoringId) => {
@@ -41,6 +46,71 @@ export default function Dashboard() {
 
   const { tutorings_today, tutorings_future } = data;
 
+      // Función para manejar el clic en el botón "Confirmar Cancelación"
+    const handleConfirmButtonClick = () => {
+        setShowConfirmModal(true); // Muestra el modal
+    };
+
+    const handleCancelConfirmation = async (tutoringId) => {
+        if (!selectedTutoringId || !selectedTutoringId) {
+            setError('No details found for this tutoring ID.');
+            return;
+        }
+
+        const csrftoken = getCookie('csrftoken'); // Función para obtener el token CSRF de la cookie
+
+        try {
+            const response = await fetch(`/backend/delete_tutoring/${tutoringId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                }
+                          });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Fallo al eliminar la asesoría.');
+            }
+
+            const data = await response.json();
+            alert(data.message); // Puedes reemplazar esto con un modal de éxito
+            window.location.reload();
+            setSelectedTutoringId('');
+            setError('');
+            setShowConfirmModal(false); // Cierra el modal después de la cancelación exitosa
+        } catch (err) {
+            setError(err.message);
+            setShowConfirmModal(false); // Cierra el modal si hay un error
+        }
+    };
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const handleOpenEditModal = (tutoring) => {
+      setTutoringToEdit(tutoring);
+      setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+      setIsEditModalOpen(false);
+      setTutoringToEdit(null);
+    };
+
+
   return (
     <div>
     <TeacherHeader/>
@@ -68,10 +138,16 @@ export default function Dashboard() {
                     onClick={() => handleOpenModal(tutoring.id)}>
                       <i className="bi bi-list-check"></i> List
                     </a>
-                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
+                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1"
+                      onClick={() => handleOpenEditModal(tutoring)}>
                       <i className="bi bi-pencil-square"></i> Edit
                     </a>
-                    <button className="btn btn-sm btn-danger d-flex align-items-center gap-1">
+                    <button className="btn btn-sm btn-danger d-flex align-items-center gap-1"
+                        onClick={() =>{
+                        setSelectedTutoringId(tutoring.id); 
+                        {handleConfirmButtonClick();};
+                        }} 
+                    >
                       <i className="bi bi-trash3"></i> Delete
                     </button>
                   </div>
@@ -115,12 +191,21 @@ export default function Dashboard() {
                     onClick={() => handleOpenModal(tutoring.id)}>
                       <i className="bi bi-list-check"></i> List
                     </a>
-                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1">
+                    <a className="btn btn-sm btn-secondary d-flex align-items-center gap-1"
+                    onClick={() => handleOpenEditModal(tutoring)}
+                    >
                       <i className="bi bi-pencil-square"></i> Edit
                     </a>
-                    <button className="btn btn-sm btn-danger d-flex align-items-center gap-1">
+                    <button className="btn btn-sm btn-danger d-flex align-items-center gap-1"
+                        onClick={() =>{
+                        setSelectedTutoringId(tutoring.id); 
+                        {handleConfirmButtonClick();};
+                        }} 
+                    >
+
                       <i className="bi bi-trash3"></i> Delete
                     </button>
+
                   </div>
                 </div>
               </div>
@@ -157,8 +242,66 @@ export default function Dashboard() {
       onClose={handleCloseModal}
       tutoringId={selectedTutoringId}
     />
+
+    <EditTutoringModal
+      isOpen={isEditModalOpen}
+      onClose={handleCloseEditModal}
+      tutoringData={tutoringToEdit}
+      onUpdate={() => window.location.reload()} // Recarga la página después de editar
+    />
+
+    {/* El Modal de Confirmación */}
+    {showConfirmModal && (
+        <div style={modalOverlayStyle}>
+            <div style={modalContentStyle}>
+                <h2>Confirm Cancellation</h2>
+                <p>¿Are you sure you want to cancel this tutoring?</p>
+                <p>You cannot undo this action.</p>
+                <div className="mb-3 d-flex gap-2 justify-content-center">
+                  <button
+                      onClick={() => handleCancelConfirmation(selectedTutoringId)}
+                      className="btn btn-danger"
+                  >
+                      Yes, Cancel
+                  </button>
+                  <button
+                      onClick={() => setShowConfirmModal(false)} // Cierra el modal sin cancelar
+                      className="btn btn-signup w-auto"
+                  >
+                      No, Go back
+                  </button>
+                </div>
+            </div>
+        </div>
+    )}
+
     </div>
     
 
   );
 }
+
+const modalOverlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+};
+
+const modalContentStyle = {
+    backgroundColor: 'white',
+    padding: '30px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+    maxWidth: '400px',
+    width: '90%',
+    zIndex: 1001,
+};
+

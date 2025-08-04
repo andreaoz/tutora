@@ -15,6 +15,8 @@ urlpatterns = [
     path(route='cancel_reservation', view=views.cancel_reservation, name='cancel_reservation'),
     path(route='student_list', view=views.student_list, name='student_list'),
     path(route='tutoring_calendar', view=views.tutoring_calendar, name='tutoring_calendar'),
-    path(route='tutoring_reservation/<int:tutoring_id>', view=views.tutoring_reservation, name='tutoring_reservation')
+    path(route='tutoring_reservation/<int:tutoring_id>', view=views.tutoring_reservation, name='tutoring_reservation'),
+    path(route='delete_tutoring/<int:tutoring_id>', view=views.delete_tutoring, name='delete_tutoring'),
+    path('edit_tutoring/<int:tutoring_id>', views.edit_tutoring, name='edit_tutoring'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

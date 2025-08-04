@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 import json
@@ -288,6 +288,54 @@ def student_list(request):
     print("Number of tutorings:", past_reservations.count())
     return JsonResponse(data)
 
+@csrf_exempt
+def delete_tutoring(request, tutoring_id):
+    tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+
+    if request.method == 'DELETE':
+        tutoring.delete()
+        return JsonResponse({'success': True, 'message': 'Tutoring deleted'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+
+@csrf_exempt
+@login_required
+def edit_tutoring(request, tutoring_id):
+    if request.method == 'PUT' or request.method == 'PATCH':
+        try:
+            tutoring = get_object_or_404(Tutoring, id=tutoring_id)
+        except Tutoring.DoesNotExist:
+            return JsonResponse({'error': 'Tutoring not found.'}, status=404)
+
+        # Verificar que el profesor autenticado es el dueño de la tutoría
+        #if tutoring.teacher != request.user.teacher:
+        #    return JsonResponse({'error': 'You do not have permission to edit this tutoring.'}, status=403)
+        
+        # Cargar los datos enviados en el body de la petición
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON.')
+
+        # Actualizar los campos. Puedes agregar más lógica de validación aquí si es necesario.
+        tutoring.course = data.get('course', tutoring.course)
+        tutoring.classroom = data.get('classroom', tutoring.classroom)
+        tutoring.semester = data.get('semester', tutoring.semester)
+
+        tutoring.save()
+
+        # Retornar una respuesta de éxito con los datos actualizados
+        return JsonResponse({
+            'message': 'Tutoring updated successfully.',
+            'tutoring': {
+                'id': tutoring.id,
+                'course': tutoring.course,
+                'classroom': tutoring.classroom,
+                'semester': tutoring.semester,
+            }
+        }, status=200)
+
+    return JsonResponse({'error': 'Only PUT or PATCH requests are allowed.'}, status=405)
 
 # STUDENTS VIEWS
 
