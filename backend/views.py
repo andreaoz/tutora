@@ -378,6 +378,7 @@ def tutoring_calendar(request):
             'classroom': tutoring.classroom,
             'semester': tutoring.semester,
             'max_students': tutoring.max_students,
+            'spots_left': tutoring.spots_left,
             'teacher': {
                 'id': tutoring.teacher.id,
                 'name': tutoring.teacher.name,

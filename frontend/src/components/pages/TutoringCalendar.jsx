@@ -57,9 +57,9 @@ const TutoringCalendar = () => {
       <div className="calendar-container">
         <div className="text-center py-5">
           <div className="spinner-border text-light" role="status">
-            <span className="visually-hidden">Cargando...</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="text-light mt-3">Cargando asesorías...</p>
+          <p className="text-light mt-3">Loading available tutorings...</p>
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ const TutoringCalendar = () => {
                           </p>
                           <div className="tutoring-details mb-2">
                             <small className="text-muted">
-                              <i className="bi bi-geo-alt"></i> {tutoring.classroom} | <i className="bi bi-mortarboard"></i> {tutoring.semester}° | <i className="bi bi-people"></i> {tutoring.max_students}
+                              <i className="bi bi-geo-alt"></i> {tutoring.classroom} | <i className="bi bi-mortarboard"></i> {tutoring.semester}° | <i className="bi bi-people"></i> {tutoring.spots_left}
                             </small>
                           </div>
                         </div>

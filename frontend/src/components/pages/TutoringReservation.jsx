@@ -1,5 +1,7 @@
 import { useState,useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import '../style/TutoringCalendar.css';
+import'../style/style.css'
 
 function TutoringReservation() {
   const { tutoringId } = useParams(); // Obtiene el ID de la URL
@@ -77,7 +79,7 @@ function TutoringReservation() {
   };
 
   if (loading) {
-    return <div className="text-center mt-5">Loading tutoring details...</div>;
+    return <div className="calendar-container"><div className="text-center ">Loading tutoring details...</div></div>;
   }
 
   if (error) {
@@ -90,15 +92,15 @@ function TutoringReservation() {
 
   if (reservationConfirmed && reservationDetails) {
     return (
-      <div className="bg-light min-vh-100 py-5">
+      <div className="calendar-container">
         <div className="container mt-5">
           <div className="card shadow-sm mx-auto" style={{ maxWidth: "600px" }}>
             <div className="card-body">
-              <h2 className="card-title text-center text-success">🎉 Reservation Confirmed!</h2>
+              <h2 className="card-title text-center text-success">Reservation Confirmed!</h2>
               <h5 className="text-center mb-4">Reservation ID: <strong>#{reservationDetails.reservation_id}</strong></h5>
 
               <div className="mb-3">
-                <h5 className="text-primary">Tutoring Information</h5>
+                <h5 className="text-success">Tutoring Information</h5>
                 <p><strong>Class:</strong> {reservationDetails.tutoring.course}</p>
                 <p><strong>Teacher:</strong> {tutoring.teacher.name} {tutoring.teacher.last_name}</p> {/* Usa tutoring original si el nombre completo del profesor no viene en result.tutoring */}
                 <p><strong>Date:</strong> {tutoring.tutoring_date}</p>
@@ -107,12 +109,12 @@ function TutoringReservation() {
               </div>
 
               <div className="mb-4">
-                <h5 className="text-primary">Student</h5>
+                <h5 className="text-success">Student</h5>
                 <p><strong>Name:</strong> {reservationDetails.student.name} {reservationDetails.student.last_name}</p>
               </div>
 
               <div className="text-center">
-                <a href="/tutoring_calendar" className="btn btn-outline-primary">📚 Book another tutoring</a>
+                <a href="/tutoring_calendar" className="btn btn-back-cal"> Book another tutoring</a>
               </div>
             </div>
           </div>
@@ -122,7 +124,7 @@ function TutoringReservation() {
   }
   
   return (
-    <div className="bg-light min-vh-100 py-5">
+    <div className="calendar-container">
       <div className="container mt-5">
         <div className="card shadow-sm mx-auto" style={{ maxWidth: "600px" }}>
           <div className="card-body">
@@ -182,12 +184,12 @@ function TutoringReservation() {
               </div>
 
               <div className="d-grid">
-                <button type="submit" className="btn btn-primary" disabled={tutoring.spots_left <= 0}>Register Reservation</button>
+                <button type="submit" className="btn btn-login" disabled={tutoring.spots_left <= 0}>Register Reservation</button>
               </div>
             </form>
 
             <div className="mt-4 text-center">
-              <a href="/tutoring_calendar" className="btn btn-link">← Back to tutoring schedule</a>
+              <a href="/tutoring_calendar" className="btn btn-signup w-auto">← Back to tutoring schedule</a>
             </div>
           </div>
         </div>
