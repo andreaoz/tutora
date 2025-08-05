@@ -25,6 +25,7 @@ const TeacherHeader = () => {
     fetch('/backend/dashboard') // o la ruta donde tengas tu vista
       .then((res) => res.json())
       .then((json) => setData(json));
+
   }, []);
 
   if (!data) return <p>Loading...</p>;
@@ -45,10 +46,35 @@ const TeacherHeader = () => {
         </button>
 
         <div className="d-flex align-items-center ms-auto">
-          <span className="me-2 fw-semibold text-light fs-5">
-            {teacher.name.charAt(0).toUpperCase() + teacher.name.slice(1).toLowerCase()}{" "}
-            {teacher.last_name.charAt(0).toUpperCase() + teacher.last_name.slice(1).toLowerCase()}
-          </span>
+
+          <div className='dropdown'>
+            <button className="btn btn-success dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              {teacher?.name?.charAt(0).toUpperCase() + teacher?.name?.slice(1).toLowerCase()}{" "}
+              {teacher?.last_name?.charAt(0).toUpperCase() + teacher?.last_name?.slice(1).toLowerCase()}
+            </button>
+
+            <ul className="dropdown-menu" aria-labelledby="userDropdown">
+              <li>
+                <a className="dropdown-item" href="#">
+                  My Profile
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  Settings
+                </a>
+              </li>
+              <li>
+                <hr className="dropdown-divider" />
+              </li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  Sign out
+                </a>
+              </li>
+            </ul>
+          </div>
+
           <img
             src={teacher.profile_pic || defaultAvatar}
             alt="profile"
@@ -83,7 +109,7 @@ const TeacherHeader = () => {
         </a>
         <a className="btn btn-signup d-flex align-items-center gap-2" href="#" onClick={logout}>
           <i className="bi bi-box-arrow-right"></i>
-          Log Out
+          Sign Out
         </a>
       </div>
     </div>
