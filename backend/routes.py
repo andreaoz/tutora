@@ -18,5 +18,6 @@ urlpatterns = [
     path(route='tutoring_reservation/<int:tutoring_id>', view=views.tutoring_reservation, name='tutoring_reservation'),
     path(route='delete_tutoring/<int:tutoring_id>', view=views.delete_tutoring, name='delete_tutoring'),
     path('edit_tutoring/<int:tutoring_id>', views.edit_tutoring, name='edit_tutoring'),
+    path('edit_profile/<int:pk>', views.edit_profile, name='edit_profile'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

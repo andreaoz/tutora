@@ -218,3 +218,41 @@ main {
   cursor: pointer;
 }
 
+.edit-box-big{
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem 2rem;
+  width: 900px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  text-align: center;
+  margin: 20px;
+}
+
+.edit-profile-container{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.edit-labels{
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 6px;
+  margin-left: 25px;
+}
+
+.edit-inputs{
+  padding: 5px;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: 10px;
+}
+
+.just{
+  display: flex;
+  justify-content: center;
+}

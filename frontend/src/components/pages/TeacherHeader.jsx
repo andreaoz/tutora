@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import'../style/style.css'
-import defaultAvatar from '../style/default_avatar.jpg';
+import avatars from '../avatars/avatar_list.js';
 
 const TeacherHeader = () => {
+
     const logout = async (e) => {
     e.preventDefault();
     let logout_url = window.location.origin+"/backend/logout";
@@ -18,6 +19,17 @@ const TeacherHeader = () => {
         console.error("Error during logout:", error);
     }
 };
+
+    const getIconSrc = (iconId) => {
+        console.log("Avatar ID recibido:", iconId);
+        const id = Number(iconId);
+        const foundIcon = avatars.find(icon => icon.id === id);
+        console.log("Icono encontrado:", foundIcon);
+        if (!foundIcon) {
+            return avatars.find(icon => icon.id).src;
+        }
+        return foundIcon.src;
+    };
     
     const [data, setData] = useState(null);
 
@@ -31,6 +43,8 @@ const TeacherHeader = () => {
   if (!data) return <p>Loading...</p>;
 
   const { teacher } = data;
+
+  console.log(data);
 
   return(
     <div>
@@ -46,40 +60,15 @@ const TeacherHeader = () => {
         </button>
 
         <div className="d-flex align-items-center ms-auto">
-
-          <div className='dropdown'>
-            <button className="btn btn-success dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <a className="btn btn-success text-light" type="button" href="/dashboard">
               {teacher?.name?.charAt(0).toUpperCase() + teacher?.name?.slice(1).toLowerCase()}{" "}
               {teacher?.last_name?.charAt(0).toUpperCase() + teacher?.last_name?.slice(1).toLowerCase()}
-            </button>
-
-            <ul className="dropdown-menu" aria-labelledby="userDropdown">
-              <li>
-                <a className="dropdown-item" href="#">
-                  My Profile
-                </a>
-              </li>
-              <li>
-                <a className="dropdown-item" href="#">
-                  Settings
-                </a>
-              </li>
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-              <li>
-                <a className="dropdown-item" href="#">
-                  Sign out
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <img
-            src={teacher.profile_pic || defaultAvatar}
-            alt="profile"
-            className="profile-pic-navbar"
-          />
+            </a>
+            <img
+              src={getIconSrc(teacher.avatar)}
+              alt="profile"
+              className="profile-pic-navbar"
+            />
         </div>
       </div>
     </nav>
@@ -106,6 +95,10 @@ const TeacherHeader = () => {
         <a className="btn btn-secondary d-flex align-items-center gap-2" href="/student_list">
           <i className="bi bi-search"></i>
           Find Student
+        </a>
+        <a className="btn btn-secondary d-flex align-items-center gap-2" href={`/edit_profile/${teacher.id}`}>
+          <i className="bi bi-pencil-square"></i>
+          Edit Profile
         </a>
         <a className="btn btn-signup d-flex align-items-center gap-2" href="#" onClick={logout}>
           <i className="bi bi-box-arrow-right"></i>

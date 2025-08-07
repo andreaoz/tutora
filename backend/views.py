@@ -68,7 +68,7 @@ def dashboard(request):
                 'id': teacher.id,
                 'name': teacher.name,  
                 'last_name' : teacher.last_name,
-                'profile_pic': teacher.profile_image.url if teacher.profile_image else None,
+                'avatar': teacher.avatar,
             },
             'tutorings_today': [
                 {
@@ -306,12 +306,6 @@ def edit_tutoring(request, tutoring_id):
             tutoring = get_object_or_404(Tutoring, id=tutoring_id)
         except Tutoring.DoesNotExist:
             return JsonResponse({'error': 'Tutoring not found.'}, status=404)
-
-        # Verificar que el profesor autenticado es el dueño de la tutoría
-        #if tutoring.teacher != request.user.teacher:
-        #    return JsonResponse({'error': 'You do not have permission to edit this tutoring.'}, status=403)
-        
-        # Cargar los datos enviados en el body de la petición
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -336,6 +330,34 @@ def edit_tutoring(request, tutoring_id):
         }, status=200)
 
     return JsonResponse({'error': 'Only PUT or PATCH requests are allowed.'}, status=405)
+
+@csrf_exempt
+@login_required
+def edit_profile(request, pk):
+    teacher = Teacher.objects.get(pk=pk)    
+    if request.method == 'GET':
+        data = {
+            'id': teacher.id,
+            'name': teacher.name,
+            'last_name': teacher.last_name,
+            'email': teacher.email,
+            'avatar': teacher.avatar
+        }
+        print(data)
+        return JsonResponse(data)
+
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+        teacher.name = data.get('name', teacher.name)
+        teacher.last_name = data.get('last_name', teacher.last_name)
+        teacher.email = data.get('email', teacher.email)
+        teacher.avatar = data.get('avatar', teacher.avatar)
+        teacher.save()
+        return JsonResponse({'message': 'Teacher updated successfully'})
+
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
 
 # STUDENTS VIEWS
 
