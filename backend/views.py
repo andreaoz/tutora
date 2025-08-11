@@ -221,38 +221,75 @@ def teacher_signup(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+@csrf_exempt
 @login_required
 def attendance_list(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)
-    reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
     teacher = Teacher.objects.get(user=request.user)
 
-    data = {
-        'tutoring_reservations':[
-            {   
-                'attendance': r.present,
-                'student': {
-                    'name' : r.student.name,
-                    'last_name': r.student.last_name,
-                    'group': r.student.group,
-                    'semester' : r.student.semester,
-                    'email' : r.student.email
-                },
-                'tutoring' : {
-                    'course' : r.tutoring.course,
-                    'teacher' : {
-                        'name' : r.teacher.name,
-                        'last_name' : r.teacher.last_name
-                    },
-                    'tutoring_date' : r.tutoring.tutoring_date,
-                    'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M')
-                },
-            }
-            for r in reservations
-        ]
-    }
+    if request.method == "GET":
+        reservations = Reservation.objects.filter(tutoring=tutoring).select_related('student')
 
-    return JsonResponse(data)
+        data = {
+            'tutoring_reservations':[
+                {   'id': r.id,
+                    'attendance': r.present,
+                    'student': {
+                        'name' : r.student.name,
+                        'last_name': r.student.last_name,
+                        'group': r.student.group,
+                        'semester' : r.student.semester,
+                        'email' : r.student.email
+                    },
+                    'tutoring' : {
+                        'course' : r.tutoring.course,
+                        'teacher' : {
+                            'name' : r.teacher.name,
+                            'last_name' : r.teacher.last_name
+                        },
+                        'tutoring_date' : r.tutoring.tutoring_date,
+                        'tutoring_time' : r.tutoring.tutoring_time.strftime('%H:%M')
+                    }                }
+                for r in reservations
+            ]
+        }
+
+        return JsonResponse(data)
+    
+    elif request.method == "POST":
+        import json
+        try:
+            payload = json.loads(request.body)
+            updates = payload.get("updates", [])
+        except Exception:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        updated_reservations = []
+        for item in updates:
+            try:
+                reservation_id = item.get("id")
+                is_present = item.get("present")
+
+                if reservation_id is None or is_present is None:
+                    continue
+
+                reservation = Reservation.objects.get(id=reservation_id, tutoring=tutoring)
+                reservation.present = bool(is_present)
+                reservation.save()
+
+                updated_reservations.append({
+                    'id': reservation.id,
+                    'present': reservation.present
+                })
+
+            except Reservation.DoesNotExist:
+                continue
+
+        return JsonResponse({
+            'message': 'Attendance saved successfully',
+            'updated': updated_reservations
+        })
+        
 
 @login_required
 def student_list(request):
@@ -279,6 +316,7 @@ def student_list(request):
                     'classroom' : r.tutoring.classroom,
                     'semester' : r.tutoring.semester,
                 },
+                'present' : r.present,
 
             }
             for r in past_reservations

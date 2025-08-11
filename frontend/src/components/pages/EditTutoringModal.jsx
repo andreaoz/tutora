@@ -170,7 +170,7 @@ export default function EditTutoringModal({ isOpen, onClose, tutoringData, onUpd
           </div>
 
           <div className="d-flex justify-content-center gap-2 mt-3">
-            <button type="submit" className="d-flex justify-content-center gap-2 mt-3">Save Changes</button>
+            <button type="submit" className="btn btn-login w-auto">Save Changes</button>
             <button type="button" className="btn btn-signup w-auto" onClick={onClose}>Cancel</button>
           </div>
           {error && <div className="alert alert-danger mt-3">{error}</div>}

@@ -45,6 +45,54 @@ const AttendanceModal = ({ isOpen, onClose, tutoringId }) => {
 
     // Si tenemos datos, los mostramos
     const firstReservation = attendanceData.tutoring_reservations[0];
+
+const handleSaveAttendance = async () => {
+    try {
+        // Mapeamos los datos para crear el array de objetos con `id` y `present`
+        const updates = attendanceData.tutoring_reservations.map(r => ({
+            id: r.id, // Ahora `r.id` existe gracias a la modificación en Django
+            present: r.attendance
+        }));
+
+        const response = await fetch(`/backend/attendance_list/${tutoringId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ updates: updates }), // Enviamos los datos dentro de la clave 'updates'
+        });
+
+        if (!response.ok) {
+            throw new Error("An error occurred while saving the attendance");
+        }
+
+        const result = await response.json();
+        console.log("Attendance updated:", result);
+        alert("Attendances saved successfully.");
+    } catch (error) {
+        console.error("Error saving changes:", error);
+        alert("An error occurred while saving the attendance");
+    }
+};
+
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+
     return (
       <div>
         <h2 className="text-success d-flex align-items-center gap-2">
@@ -72,11 +120,30 @@ const AttendanceModal = ({ isOpen, onClose, tutoringId }) => {
                 <td>{r.student.group}</td>
                 <td>{r.student.semester}</td>
                 <td>{r.student.email}</td>
-                <td><i className="bi bi-circle"></i></td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={r.attendance}
+                    onChange={(e) => {
+                      const updated = { ...attendanceData };
+                      updated.tutoring_reservations = updated.tutoring_reservations.map((item, i) =>
+                        i === index ? { ...item, attendance: e.target.checked } : item
+                      );
+                      setAttendanceData(updated);
+                    }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div className='just'>
+            <button onClick={handleSaveAttendance} className="btn btn-login w-auto">
+              Save Attendances
+            </button>
+        </div>
+
+
         </div>
         </div>
 

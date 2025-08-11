@@ -2,17 +2,17 @@ from django.contrib import admin
 from .models import Teacher, Student, Tutoring, Reservation
 
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('id','name','last_name','email')
+    list_display = ('id','name','last_name','email', 'avatar')
 
 class TutoringAdmin(admin.ModelAdmin):
-    list_display = ('id','course','tutoring_date','classroom','semester','teacher_name')
+    list_display = ('id','course','tutoring_date', 'tutoring_time', 'classroom','semester','teacher_name','max_students')
 
     def teacher_name(self,obj):
         return f"{obj.teacher.name} {obj.teacher.last_name}"
     teacher_name.short_description = 'Teacher'
 
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'reservation_date', 'tutoring_id', 'course','tutoring_date','teacher_name','student_name')
+    list_display = ('id', 'reservation_date', 'tutoring_id', 'course','tutoring_date','teacher_name','student_name','present')
 
     def course(self,obj):
         return f"{obj.tutoring.course}"

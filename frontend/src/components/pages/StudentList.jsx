@@ -67,6 +67,7 @@ return(
                         <th>Time</th>
                         <th>Classroom</th>
                         <th>Semester</th>
+                        <th>Attendance</th>
                     </tr>
                     </thead>
             
@@ -81,7 +82,13 @@ return(
                                 <td>{reservation.tutoring.tutoring_time}</td>
                                 <td>{reservation.tutoring.classroom}</td>
                                 <td>{reservation.tutoring.semester}</td>
-                                
+                                <td className='just'>
+                                     {reservation.present ? (
+                                        <i className="bi bi-check-circle-fill text-success"></i>
+                                    ) : (
+                                        <i className="bi bi-x-circle-fill text-danger"></i>
+                                    )}
+                                </td>
                             </tr>
                         ))} 
                     </tbody>
