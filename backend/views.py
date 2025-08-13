@@ -349,14 +349,13 @@ def edit_tutoring(request, tutoring_id):
         except json.JSONDecodeError:
             return HttpResponseBadRequest('Invalid JSON.')
 
-        # Actualizar los campos. Puedes agregar más lógica de validación aquí si es necesario.
+        # Updates tutoring
         tutoring.course = data.get('course', tutoring.course)
         tutoring.classroom = data.get('classroom', tutoring.classroom)
         tutoring.semester = data.get('semester', tutoring.semester)
 
         tutoring.save()
 
-        # Retornar una respuesta de éxito con los datos actualizados
         return JsonResponse({
             'message': 'Tutoring updated successfully.',
             'tutoring': {
@@ -468,7 +467,6 @@ def tutoring_reservation(request, tutoring_id):
     tutoring = get_object_or_404(Tutoring, id=tutoring_id)
 
     if request.method == 'GET':
-        # Devolver los detalles de la tutoría
         return JsonResponse({
             "id": tutoring.id,
             "course": tutoring.course,
@@ -476,9 +474,9 @@ def tutoring_reservation(request, tutoring_id):
                 "name": tutoring.teacher.name,
                 "last_name": tutoring.teacher.last_name
             },
-            "tutoring_date": tutoring.tutoring_date, # Asegúrate de que este campo exista o ajusta el nombre
-            "tutoring_time": tutoring.tutoring_time, # Asegúrate de que este campo exista o ajusta el nombre
-            "classroom": tutoring.classroom, # Asegúrate de que este campo exista o ajusta el nombre
+            "tutoring_date": tutoring.tutoring_date, 
+            "tutoring_time": tutoring.tutoring_time, 
+            "classroom": tutoring.classroom, 
             "spots_left": tutoring.spots_left
         })
     

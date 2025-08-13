@@ -13,7 +13,6 @@ const AttendanceModal = ({ isOpen, onClose, tutoringId }) => {
         setIsLoading(true);
         setError(null);
         try {
-          // Asegúrate que la URL coincida con tu configuración
           const response = await fetch(`/backend/attendance_list/${tutoringId}`);
           if (!response.ok) {
             throw new Error('La respuesta de la red no fue exitosa');

@@ -43,10 +43,10 @@ function TutoringReservation() {
       }
     };
 
-    if (tutoringId) { // Asegúrate de que tengamos un tutoringId antes de hacer el fetch
+    if (tutoringId) { 
       fetchTutoringDetails();
     }
-  }, [tutoringId, navigate]); // Dependencias para re-ejecutar si tutoringId cambia
+  }, [tutoringId, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,10 +69,7 @@ function TutoringReservation() {
     if (res.ok) {
       setReservationConfirmed(true); // Establece el estado de confirmación a true
       setReservationDetails(result); // Guarda los detalles de la reserva
-      setMessages([{ type: "success", text: result.message }]); // Opcional: mantener el mensaje en la lista si quieres
-      
-      // Puedes redirigir a una página de confirmación aquí
-      // navigate(`/reserva-confirmada/${result.reservation_id}`);
+      setMessages([{ type: "success", text: result.message }]); 
     } else {
       setMessages([{ type: "danger", text: result.error }]);
     }
@@ -102,7 +99,7 @@ function TutoringReservation() {
               <div className="mb-3">
                 <h5 className="text-success">Tutoring Information</h5>
                 <p><strong>Class:</strong> {reservationDetails.tutoring.course}</p>
-                <p><strong>Teacher:</strong> {tutoring.teacher.name} {tutoring.teacher.last_name}</p> {/* Usa tutoring original si el nombre completo del profesor no viene en result.tutoring */}
+                <p><strong>Teacher:</strong> {tutoring.teacher.name} {tutoring.teacher.last_name}</p> 
                 <p><strong>Date:</strong> {tutoring.tutoring_date}</p>
                 <p><strong>Time:</strong> {tutoring.tutoring_time}</p>
                 <p><strong>Classroom:</strong> {tutoring.classroom}</p>

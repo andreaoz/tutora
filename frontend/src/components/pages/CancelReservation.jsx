@@ -58,14 +58,14 @@ function CancelReservationPage() {
             }
 
             const data = await response.json();
-            alert(data.success); // Puedes reemplazar esto con un modal de éxito
+            alert(data.success); 
             setReservationDetails(null);
             setReservationId('');
             setError('');
-            setShowConfirmModal(false); // Cierra el modal después de la cancelación exitosa
+            setShowConfirmModal(false); 
         } catch (err) {
             setError(err.message);
-            setShowConfirmModal(false); // Cierra el modal si hay un error
+            setShowConfirmModal(false); 
         }
     };
 

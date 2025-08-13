@@ -19,8 +19,6 @@ const EditTeacher = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // La URL de tu API en Django. Asume que tienes un profesor con id=1.
-  // En un caso real, esto debería ser dinámico.
   const API_URL = `/backend/edit_profile/${teacherId}`;
 
   useEffect(() => {
@@ -28,8 +26,6 @@ const EditTeacher = () => {
     const fetchTeacher = async () => {
       try {
         const response = await axios.get(API_URL, {
-          // Si necesitas autenticación, puedes incluir el token aquí
-          // headers: { Authorization: `Token ${yourAuthToken}` }
         });
         setTeacher(response.data);
       } catch (err) {
@@ -58,8 +54,7 @@ const EditTeacher = () => {
     setSuccess(false); // Resetear el estado de éxito
     try {
       await axios.put(API_URL, teacher, {
-        // Si necesitas autenticación, puedes incluir el token aquí
-        // headers: { Authorization: `Token ${yourAuthToken}` }
+
       });
       setSuccess(true); // Indicar que la actualización fue exitosa
       console.log('Datos actualizados correctamente.');
@@ -116,7 +111,7 @@ const EditTeacher = () => {
         </div>
 
         <div className="d-flex flex-column align-items-center mt-3">
-            <label className='edit-label'>Selecciona un ícono:</label>
+            <label className='edit-label'>Select an icon:</label>
             <div className="icon-selector d-flex justify-content-center gap-3 mt-2">
                 {avatars.map(icon => (
                     <img

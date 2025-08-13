@@ -16,7 +16,6 @@ export default function EditTutoringModal({ isOpen, onClose, tutoringData, onUpd
 
 
   useEffect(() => {
-    // Si el modal está abierto y hay datos de tutoría, prellena el formulario
     if (isOpen && tutoringData) {
       setFormData({
         course: tutoringData.course || '',
@@ -73,7 +72,7 @@ export default function EditTutoringModal({ isOpen, onClose, tutoringData, onUpd
 
       const updatedData = await response.json();
       setSuccess(updatedData.message);
-      onUpdate(updatedData.tutoring); // Llama a la función del padre para actualizar la lista
+      onUpdate(updatedData.tutoring); 
       setTimeout(() => {
         onClose();
       }, 1500); // Cierra el modal después de 1.5 segundos

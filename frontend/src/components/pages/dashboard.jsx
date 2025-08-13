@@ -74,14 +74,14 @@ export default function Dashboard() {
             }
 
             const data = await response.json();
-            alert(data.message); // Puedes reemplazar esto con un modal de éxito
+            alert(data.message); 
             window.location.reload();
             setSelectedTutoringId('');
             setError('');
-            setShowConfirmModal(false); // Cierra el modal después de la cancelación exitosa
+            setShowConfirmModal(false); 
         } catch (err) {
             setError(err.message);
-            setShowConfirmModal(false); // Cierra el modal si hay un error
+            setShowConfirmModal(false); 
         }
     };
 
