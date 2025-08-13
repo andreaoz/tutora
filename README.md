@@ -1,23 +1,40 @@
-# 🎓 Tutora
+# **Tutora**  
 
-Tutora es una aplicación web full-stack desarrollada para facilitar la gestión de asesorías académicas entre docentes y estudiantes.
+Tutora is a full-stack web application designed to streamline the management of academic tutoring sessions scheduling between teachers and students.  
 
-## 🚀 Tecnologías
 
-- **Frontend:** React, Bootstrap
-- **Backend:** Django
-- **Lenguajes:** JavaScript, Python
-- **Base de datos (planeada):** PostgreSQL
+[Pictures of tutora]()
 
-## 🧠 Funcionalidades
+## **Technologies**  
 
-- Los docentes publican sus horarios de asesorías.
-- Los alumnos pueden reservar sesiones disponibles.
-- Generación de registro de reservaciones (en desarrollo).
-- Interfaz moderna y responsiva.
+- **Frontend:** React, Bootstrap  
+- **Backend:** Django  
+- **Languages:** JavaScript, Python  
 
-## 📦 Instalación local
+## **Features**  
 
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/andreaoz/tutora.git
+### **User Authentication**
+- Login for teachers  
+- Teacher sign-up functionality  
+
+### **Tutoring Management for Teachers**
+- Dashboard with all tutorings scheduled
+- Add tutoring schedules  
+- Edit existing tutoring sessions  
+- Delete tutoring sessions  
+- View attendance lists
+- View past tutorings
+- View student lists from past tutorings
+- Edit teacher profile  
+
+### **Tutoring Booking for Students**
+- Browse available tutoring sessions in a calendar
+- Book tutoring sessions
+- Cancel reservations
+
+
+### **Setup instructions**  
+*To be detailed.*
+
+### **Project status**
+Currently working on JWT authentication to prepare for deployment.
